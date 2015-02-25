@@ -20,7 +20,7 @@
 void matrix_add(double** A, double** B, double** ans,int m,int n);
 void matrix_substract(double** A, double** B, double** ans,int m,int n);
 void matrix_times(double c, double** A, double** ans, int m,int n);
-void matrix_mutiply(double** A, double** B, double** ans,int m,int k,int n);
+void matrix_multiply(double** A, double** B, double** ans,int m,int n);
 void write_matrix_to_file(double **A,int m,int n);
 void read_matrix_from_file(double **A,int m,int n,FILE *fp);
 int get_column(FILE *fp);
@@ -29,7 +29,9 @@ char* readline(FILE* f);
 char* read_next_token(char *line,int index);
 void matrix_transpose(double** A, double** B,int m,int n);
 void random_initialize(double **A,int m,int n);
-
+void matrix_multiply1(double** A, double** B, double** ans,int m,int n);
+void matrix_multiply2(double** A, double** B, double** ans,int m,int n);
+void matrix_multiply3(double** A, double** B, double** ans,int m,int n);
 
 
 // ans=A+B
@@ -65,7 +67,7 @@ void matrix_times(double c, double** A, double** ans, int m,int n){
 
 // ans=A*B
 // M*K  *  K*N  =   M*N
-void matrix_mutiply(double** A, double** B, double** ans,int m,int k,int n){
+void matrix_multiply(double** A, double** B, double** ans,int m,int n){
     int i1,i2;
     for (i1=0; i1<m; i1++) {
         for (i2=0; i2<n; i2++) {
@@ -190,3 +192,50 @@ void matrix_transpose(double** A, double** B,int m,int n){
         }
     }
 }
+
+// ans=A*BT
+void matrix_multiply1(double** A, double** B, double** ans,int m,int n){
+    int i1,i2;
+    for (i1=0; i1<m; i1++) {
+        for (i2=0; i2<n; i2++) {
+            int tmp=0;
+            int j1;
+            for (j1=0; j1<n; j1++) {
+                tmp+=A[i1][j1]*B[i2][j1];
+            }
+            ans[i1][i2]=tmp;
+        }
+    }
+}
+
+// ans=AT*B
+void matrix_multiply2(double** A, double** B, double** ans,int m,int n){
+    int i1,i2;
+    for (i1=0; i1<m; i1++) {
+        for (i2=0; i2<n; i2++) {
+            int tmp=0;
+            int j1;
+            for (j1=0; j1<n; j1++) {
+                tmp+=A[j1][i1]*B[j1][i2];
+            }
+            ans[i1][i2]=tmp;
+        }
+    }
+}
+
+// ans = AT *BT
+void matrix_multiply3(double** A, double** B, double** ans,int m,int n){
+    int i1,i2;
+    for (i1=0; i1<m; i1++) {
+        for (i2=0; i2<n; i2++) {
+            int tmp=0;
+            int j1;
+            for (j1=0; j1<n; j1++) {
+                tmp+=A[j1][i1]*B[i2][j1];
+            }
+            ans[i1][i2]=tmp;
+        }
+    }
+}
+
+
