@@ -45,7 +45,18 @@ int main(int argc, const char * argv[])
     read_matrix_from_file(K, Krow, Kcol, fp);
     fclose(fp);
     
-    //
+    // S
+    int Srow=get_row("SocialNET_matrix");
+    fp=fopen("SocialNET_matrix", "r");
+    int Scol=get_column(fp);
+    double **S = (double **)malloc(sizeof(double)*Srow);
+    for (i=0; i<Srow; i++) {
+        S[i]=(double *)malloc(sizeof(double)*Scol);
+    }
+    read_matrix_from_file(S, Srow, Scol, fp);
+    fclose(fp);
+    
+    // B
     
     
     
@@ -59,5 +70,6 @@ int main(int argc, const char * argv[])
         
         alpha_p*=0.9;
     }
+    
     return 0;
 }
