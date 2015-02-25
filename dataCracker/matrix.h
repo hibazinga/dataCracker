@@ -27,6 +27,10 @@ int get_column(FILE *fp);
 int get_row(char* s);
 char* readline(FILE* f);
 char* read_next_token(char *line,int index);
+void matrix_transpose(double** A, double** B,int m,int n);
+void random_initialize(double **A,int m,int n);
+
+
 
 // ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n){
@@ -175,4 +179,14 @@ char* read_next_token(char *line,int index){
         token[len] = '\0';
     }
     return token;
+}
+
+// Transpose Matrix A -> B,  B = (A)T, A = m*n, B= n*m
+void matrix_transpose(double** A, double** B,int m,int n){
+    int i,j;
+    for (i=0; i<m; ++i) {
+        for (j=0; j<n; ++j) {
+            B[j][i]=A[i][j];
+        }
+    }
 }
