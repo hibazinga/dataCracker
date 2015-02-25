@@ -14,6 +14,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
+
+
+// A+B
+void matrix_add(double** A, double** B, double** ans,int m,int n){
+
+
+}
+
+
 
 // M*K  *  K*N  =   M*N
 void matrix_mutiply(double** A, double** B, double** ans,int m,int k,int n){
@@ -41,5 +51,15 @@ void write_matrix_to_file(double **A,int m,int n){
             fputc(',',fp);
         }
         fputc('\n', fp);
+    }
+}
+
+void random_initialize(double **A,int m,int n){
+    srand((unsigned)time(NULL));
+    int i,j;
+    for (i=0; i<m; i++) {
+        for (j=0; j<n; j++) {
+            A[i][j]=RAND_MAX/rand();
+        }
     }
 }
