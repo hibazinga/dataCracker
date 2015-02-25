@@ -26,7 +26,7 @@ void read_matrix_from_file(double **A,int m,int n,FILE *fp);
 int get_column(FILE *fp);
 int get_row(char* s);
 char* readline(FILE* f);
-
+char* read_next_token(char *line,int index);
 
 // ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n){
@@ -93,9 +93,18 @@ void write_matrix_to_file(double **A,int m,int n){
 
 // '\t' seperated
 void read_matrix_from_file(double **A,int m,int n,FILE *fp){
-
-
-
+    char *line;
+    int i=0;
+    int j=0;
+    while ((line=readline(fp))) {
+        int index=0;
+        for (j=0; j<n; j++) {
+            char *p=read_next_token(line, index);
+            index+=(1+strlen(p));
+            A[i][j]=atof(p);
+        }
+        i++;
+    }
 }
 
 
@@ -118,7 +127,6 @@ int get_column(FILE *fp){
         if(*line=='\t') column++;
         line++;
     }
-    fclose(fp);
     return column;
 }
 
@@ -144,4 +152,15 @@ char* readline(FILE* f)
         line[len] = '\0';
     }
     return line;
+}
+
+char* read_next_token(char *line,int index){
+    char* token = (char*) calloc(1, sizeof(char) );
+    int len=0;
+    while (line[index]!='\0' && line[index]!='\t') {
+        token = (char*) realloc(token, sizeof(char) * (len + 2) );
+        token[len++] = line[index++];
+        token[len] = '\0';
+    }
+    return token;
 }
