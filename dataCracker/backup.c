@@ -22,8 +22,30 @@
 int main1(int argc, const char * argv[])
 {
     
+ 
+ 
+ // test for get_row();
+ printf("hello\n");
+ int row = get_row("backup.c");
+ printf("world\n");
+ printf("%d",row);
+ return 0;
+ 
+ 
+ 
+ // test for read_next_token();
+ 
+ char *str="123\t456\t678";
+ int i;
+ int index=0;
+ for(i=0;i<3;i++){
+ char *p=read_next_token(str,index);
+ index+=(1+strlen(p));
+ printf("%s\n",p);
+ }
+
     //LFM Model
-    
+
     // K
     int i=0;
     int Krow=get_row("Keyword_matrix");
@@ -63,5 +85,6 @@ int main1(int argc, const char * argv[])
     }
     
     return 0;
+ 
 }
 */
