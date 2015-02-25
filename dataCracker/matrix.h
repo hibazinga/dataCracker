@@ -133,7 +133,19 @@ int get_column(FILE *fp){
 int get_row(char *filename){
     FILE * fp;
     char buffer[10];
-    fp=popen(strcat("wc -l ",filename),"r");
+    char *s=(char *)malloc((6+1+strlen(filename))*sizeof(char));
+    s[strlen(s)-1]='\0';
+    s[0]='w';
+    s[1]='c';
+    s[2]=' ';
+    s[3]='-';
+    s[4]='l';
+    s[5]=' ';
+    int i;
+    for (i=0; i<strlen(filename); i++) {
+        s[i+6]=filename[i];
+    }
+    fp=popen(s,"r");
     fgets(buffer,sizeof(buffer),fp);
     pclose(fp);
     int row= atoi(buffer);
