@@ -115,7 +115,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<M1row; i++) {
         M1[i]=(double *)malloc(sizeof(double)*M1col);
     }
-    matrix_multiply(K, P1, M1, Krow, F);
+    matrix_multiply(K, P1, M1, Krow, Kcol, F);
     
     
     //2. M2=S*P2/|S|
@@ -125,7 +125,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<M2row; i++) {
         M2[i]=(double *)malloc(sizeof(double)*M2col);
     }
-    matrix_multiply(S, P2, M2, Srow, F);
+    matrix_multiply(S, P2, M2, Srow, Scol, F);
     
     
     //3. M1=M1+M2
@@ -138,7 +138,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<Mrow; i++) {
         M[i]=(double *)malloc(sizeof(double)*Mcol);
     }
-    matrix_multiply(M1, Q, M, M1row, Qcol);
+    matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
     
     //5. M = M+B
     matrix_add(M, B, M, Mrow, Mcol);
@@ -212,19 +212,19 @@ int main(int argc, const char * argv[])
         matrix_times(alpha_p, M, M, Mrow, Mcol);
         
         //1. tmp0 = M*QT
-        matrix_multiply1(M, Q, tmp0, Mrow, Qrow);
+        matrix_multiply1(M, Q, tmp0, Mrow, Mcol, Qrow);
         
         // P1
         matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
         
-        matrix_multiply2(K, M, tmp1, Kcol, Mcol);
+        matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
         
         matrix_add(P1, tmp1, P1, P1row, P1col);
         
         // P2
         matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
         
-        matrix_multiply2(S, M, tmp2, Scol, Mcol);
+        matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
         
         matrix_add(P2, tmp2, P2, P2row, P2col);
         
@@ -232,13 +232,13 @@ int main(int argc, const char * argv[])
         // Q
         matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
         
-        matrix_multiply(K, P1, tmp3, Krow, P1col);
+        matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
         
-        matrix_multiply(S, P2, tmp4, Srow, P2col);
+        matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
         
         matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
         
-        matrix_multiply2(tmp3, M, tmp5, P1col, Mcol);
+        matrix_multiply2(tmp3, M, tmp5, P1col, P1row, Mcol);
         
         matrix_add(Q, tmp5, Q, Qrow, Qcol);
         
@@ -250,16 +250,16 @@ int main(int argc, const char * argv[])
         
         // M:
         //1. M1=K*P1/|K|
-        matrix_multiply(K, P1, M1, Krow, F);
+        matrix_multiply(K, P1, M1, Krow, Kcol, F);
         
         //2. M2=S*P2/|S|
-        matrix_multiply(S, P2, M2, Srow, F);
+        matrix_multiply(S, P2, M2, Srow, Scol, F);
         
         //3. M1=M1+M2
         matrix_add(M1, M2, M1, M1row, M1col);
         
         //4. M = M1*Q
-        matrix_multiply(M1, Q, M, M1row, Qcol);
+        matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
         
         //5. M = M+B
         matrix_add(M, B, M, Mrow, Mcol);
