@@ -260,7 +260,7 @@ void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n){
 
 void read_sparse_matrix(int* i,int* j,double* value,FILE *fp){
     char *line;
-    fseek(fp, 0, SEEK_SET);
+    //fseek(fp, 0, SEEK_SET);
     line=readline(fp);
     int m=0;
     char *p;
@@ -292,7 +292,7 @@ void sparse_matrix_times(double c, double* A, int n){
     }
 }
 
-void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n){
+void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n){
     int i1,i2;
     int index=0;
     for (i1=0; i1<n; i1++) {

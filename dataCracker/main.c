@@ -14,7 +14,7 @@
 #define KNORM 10    // matrix norm of K calculated by matlab
 #define SNORM 10    //            --  S --
 #define F 128       // # of latent factors 64 or 128
-#define N 1      // # of iterations
+#define N 1000      // # of iterations
 #define alpha 0.02  // learning rate
 #define lambda 0.01 // normalization factor
 
@@ -31,29 +31,29 @@ int main(int argc, const char * argv[])
     //LFM Model
     if (SPARSE){
         
-        const int Krow = 3;
-        const int Kcol = 6;
-        
-        const int Srow = 3;
-        const int Scol = 6;
-        
     int i=0;
     FILE *fp;
+        int *RC = (int *)malloc(2*sizeof(int));
     
     
     // R
-    int Rrow=get_row(R_M);
+    //int Rrow=get_row(R_M);
     //printf("%d\n",Rrow);
-    fp=fopen(R_M, "r");
-    int Rcol=get_column(fp);
+        fp=fopen(R_M, "r");
+    //int Rcol=get_column(fp);
     //printf("%d\n",Rcol);
-    double **R = (double **)malloc(sizeof(double)*Rrow);
-    for (i=0; i<Rrow; i++) {
-        R[i]=(double *)malloc(sizeof(double)*Rcol);
-    }
-    //fclose(fp);fp=fopen(R_M, "r");
-    read_matrix_from_file(R, Rrow, Rcol, fp);
-    fclose(fp);
+        
+        read_row_and_column(fp, RC);
+        const int Rrow=RC[0];
+        const int Rcol=RC[1];
+        
+    
+        int Rline=get_row(R_M);
+        int* Rr=(int *)malloc(Rline*sizeof(int));
+        int* Rc=(int *)malloc(Rline*sizeof(int));
+        double* R=(double *)malloc(Rline*sizeof(double));
+        read_sparse_matrix(Rr, Rc, R, fp);
+        fclose(fp);
     /*int m,n;
     for (m=0; m<Rrow; ++m) {
         for (n=0; n<Rcol; ++n) {
@@ -79,6 +79,12 @@ int main(int argc, const char * argv[])
      */
     int Kline=get_row(Keyword_M);
     fp=fopen(Keyword_M, "r");
+        
+        read_row_and_column(fp, RC);
+        const int Krow=RC[0];
+        const int Kcol=RC[1];
+        
+        
     int* Kr=(int *)malloc(Kline*sizeof(int));
     int* Kc=(int *)malloc(Kline*sizeof(int));
     double* K=(double *)malloc(Kline*sizeof(double));
@@ -112,6 +118,12 @@ int main(int argc, const char * argv[])
     */
     int Sline=get_row(Social_M);
     fp=fopen(Keyword_M, "r");
+        
+        read_row_and_column(fp, RC);
+        const int Srow=RC[0];
+        const int Scol=RC[1];
+        
+        
     int* Sr=(int *)malloc(Sline*sizeof(int));
     int* Sc=(int *)malloc(Sline*sizeof(int));
     double* S=(double *)malloc(Sline*sizeof(double));
@@ -271,7 +283,8 @@ int main(int argc, const char * argv[])
         //gradient descent
         
         // M = R-M
-        matrix_substract(R, M, M, Rrow, Rcol);
+        //matrix_substract(R, M, M, Rrow, Rcol);
+        sparse_matrix_substract(Rr, Rc, R, M, M, Rrow, Rcol);
         
         // M = alpha * M
         matrix_times(alpha_p, M, M, Mrow, Mcol);
@@ -339,6 +352,15 @@ int main(int argc, const char * argv[])
     // write to file
     write_matrix_to_file(M, Mrow, Mcol);
         
+        
+        
+        
+        
+        
+        
+        
+        
+    //traditional ways
     }else{
         
         int i=0;

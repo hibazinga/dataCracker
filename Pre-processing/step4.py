@@ -2,6 +2,7 @@ path_in1 = 'rec_log_train_pre_3.txt'
 path_in2 = '../track1/user_profile.txt'
 path_in3 = '../track1/user_key_word.txt'
 path_in4 = '../track1/user_sns.txt'
+path_in5 = '../track1/user_action.txt'
 
 file_in1 = open(path_in1, "r")
 userID = set([])
@@ -37,31 +38,91 @@ for line in file_in2:
     if l[0] in userID:
         if gender == 0 or age == -1:
 		    g13.add(l[0])
-        elif gender == 1 and age >= 0 and age <= 12:
+        elif gender == 1 and age >= 0 and age <= 15:
     	    g1.add(l[0])
-        elif gender == 2 and age >= 0 and age <= 12:
+        elif gender == 2 and age >= 0 and age <= 15:
             g2.add(l[0])
-        elif gender == 1 and age > 12 and age <= 25:
+        elif gender == 1 and age > 15 and age <= 20:
             g3.add(l[0])
-        elif gender == 2 and age > 12 and age <= 25:
+        elif gender == 2 and age > 15 and age <= 20:
             g4.add(l[0])
-        elif gender == 1 and age > 25 and age <= 35:
+        elif gender == 1 and age > 20 and age <= 25:
             g5.add(l[0])
-        elif gender == 2 and age > 25 and age <= 35:
+        elif gender == 2 and age > 20 and age <= 25:
             g6.add(l[0])
-        elif gender == 1 and age > 35 and age <= 45:
+        elif gender == 1 and age > 25 and age <= 30:
             g7.add(l[0])
-        elif gender == 2 and age > 35 and age <= 45:
+        elif gender == 2 and age > 25 and age <= 30:
             g8.add(l[0])
-        elif gender == 1 and age > 45 and age <= 60:
+        elif gender == 1 and age > 30 and age <= 45:
             g9.add(l[0])
-        elif gender == 2 and age > 45 and age <= 60:
+        elif gender == 2 and age > 30 and age <= 45:
             g10.add(l[0])
-        elif gender == 1 and age > 60:
+        elif gender == 1 and age > 45:
             g11.add(l[0])
-        elif gender == 2 and age > 60:
+        elif gender == 2 and age > 45:
             g12.add(l[0])
 file_in2.close()
+
+file_in5 = open(path_in5, "r")
+user_action_file1 = open('preprocessing/user_action_1.txt', "w")
+user_action_file2 = open('preprocessing/user_action_2.txt', "w")
+user_action_file3 = open('preprocessing/user_action_3.txt', "w")
+user_action_file4 = open('preprocessing/user_action_4.txt', "w")
+user_action_file5 = open('preprocessing/user_action_5.txt', "w")
+user_action_file6 = open('preprocessing/user_action_6.txt', "w")
+user_action_file7 = open('preprocessing/user_action_7.txt', "w")
+user_action_file8 = open('preprocessing/user_action_8.txt', "w")
+user_action_file9 = open('preprocessing/user_action_9.txt', "w")
+user_action_file10 = open('preprocessing/user_action_10.txt', "w")
+user_action_file11 = open('preprocessing/user_action_11.txt', "w")
+user_action_file12 = open('preprocessing/user_action_12.txt', "w")
+user_action_file13 = open('preprocessing/user_action_13.txt', "w")
+for line in file_in5:
+    l = line.split()
+    if l[1] not in userID:
+        continue
+    if l[0] in g1:
+        user_action_file1.write(line)
+    elif l[0] in g2:
+        user_action_file2.write(line)
+    elif l[0] in g3:
+        user_action_file3.write(line)
+    elif l[0] in g4:
+        user_action_file4.write(line)
+    elif l[0] in g5:
+        user_action_file5.write(line)
+    elif l[0] in g6:
+        user_action_file6.write(line)
+    elif l[0] in g7:
+        user_action_file7.write(line)
+    elif l[0] in g8:
+        user_action_file8.write(line)
+    elif l[0] in g9:
+        user_action_file9.write(line)
+    elif l[0] in g10:
+        user_action_file10.write(line)
+    elif l[0] in g11:
+        user_action_file11.write(line)
+    elif l[0] in g12:
+        user_action_file12.write(line)
+    elif l[0] in g13:
+        user_action_file13.write(line)
+file_in5.close()
+user_action_file1.close()
+user_action_file2.close()
+user_action_file3.close()
+user_action_file4.close()
+user_action_file5.close()
+user_action_file6.close()
+user_action_file7.close()
+user_action_file8.close()
+user_action_file9.close()
+user_action_file10.close()
+user_action_file11.close()
+user_action_file12.close()
+user_action_file13.close()
+
 print "file 2"
 #sclice rec_log_train.txt
 file_in1 = open(path_in1, "r")
@@ -254,6 +315,7 @@ user_sns_file10.close()
 user_sns_file11.close()
 user_sns_file12.close()
 user_sns_file13.close()
+#slice user_action
 
 
 
