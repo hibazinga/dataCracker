@@ -14,19 +14,29 @@
 #define KNORM 10    // matrix norm of K calculated by matlab
 #define SNORM 10    //            --  S --
 #define F 128       // # of latent factors 64 or 128
-#define N 100000      // # of iterations
+#define N 1      // # of iterations
 #define alpha 0.02  // learning rate
 #define lambda 0.01 // normalization factor
 
 #define Keyword_M "K.csv"
 #define Social_M "S.csv"
+#define Keyword_MT "K.csv"
+#define Social_MT "S.csv"
 #define R_M "R.csv"
 
+#define SPARSE 1
 
 int main(int argc, const char * argv[])
 {
     //LFM Model
-    
+    if (SPARSE){
+        
+        const int Krow = 100;
+        const int Kcol = 100;
+        
+        const int Srow = 100;
+        const int Scol = 100;
+        
     int i=0;
     FILE *fp;
     
@@ -54,6 +64,7 @@ int main(int argc, const char * argv[])
     
     
     // K
+    /*
     int Krow=get_row(Keyword_M);
     fp=fopen(Keyword_M, "r");
     int Kcol=get_column(fp);
@@ -65,8 +76,28 @@ int main(int argc, const char * argv[])
     read_matrix_from_file(K, Krow, Kcol, fp);
     matrix_times(1/KNORM, K, K, Krow, Kcol);
     fclose(fp);
+     */
+    int Kline=get_row(Keyword_M);
+    fp=fopen(Keyword_M, "r");
+    int* Kr=(int *)malloc(Kline*sizeof(int));
+    int* Kc=(int *)malloc(Kline*sizeof(int));
+    double* K=(double *)malloc(Kline*sizeof(double));
+    read_sparse_matrix(Kr, Kc, K, fp);
+    sparse_matrix_times(1/KNORM, K, Kline);
+    fclose(fp);
+    
+    //KT
+    
+    fp=fopen(Keyword_MT, "r");
+    int* KTr=(int *)malloc(Kline*sizeof(int));
+    int* KTc=(int *)malloc(Kline*sizeof(int));
+    double* KT=(double *)malloc(Kline*sizeof(double));
+    read_sparse_matrix(KTr, KTc, KT, fp);
+    sparse_matrix_times(1/KNORM, KT, Kline);
+    fclose(fp);
     
     // S
+    /*
     int Srow=get_row(Social_M);
     fp=fopen(Social_M, "r");
     int Scol=get_column(fp);
@@ -78,6 +109,27 @@ int main(int argc, const char * argv[])
     read_matrix_from_file(S, Srow, Scol, fp);
     matrix_times(1/SNORM, S, S, Srow, Scol);
     fclose(fp);
+    */
+    int Sline=get_row(Social_M);
+    fp=fopen(Keyword_M, "r");
+    int* Sr=(int *)malloc(Sline*sizeof(int));
+    int* Sc=(int *)malloc(Sline*sizeof(int));
+    double* S=(double *)malloc(Sline*sizeof(double));
+    read_sparse_matrix(Sr, Sc, S, fp);
+    sparse_matrix_times(1/SNORM, S, Sline);
+    fclose(fp);
+    
+    //ST
+    fp=fopen(Social_MT, "r");
+    int* STr=(int *)malloc(Sline*sizeof(int));
+    int* STc=(int *)malloc(Sline*sizeof(int));
+    double* ST=(double *)malloc(Sline*sizeof(double));
+    read_sparse_matrix(STr, STc, ST, fp);
+    sparse_matrix_times(1/SNORM, ST, Sline);
+    fclose(fp);
+    
+    
+    
     
     // B
     
@@ -128,8 +180,9 @@ int main(int argc, const char * argv[])
     for (i=0; i<M1row; i++) {
         M1[i]=(double *)malloc(sizeof(double)*M1col);
     }
-    matrix_multiply(K, P1, M1, Krow, Kcol, F);
     
+    //matrix_multiply(K, P1, M1, Krow, Kcol, F);
+    sparce_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
     
     //2. M2=S*P2/|S|
     int M2row=Srow;
@@ -138,8 +191,8 @@ int main(int argc, const char * argv[])
     for (i=0; i<M2row; i++) {
         M2[i]=(double *)malloc(sizeof(double)*M2col);
     }
-    matrix_multiply(S, P2, M2, Srow, Scol, F);
-    
+    //matrix_multiply(S, P2, M2, Srow, Scol, F);
+    sparce_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F);
     
     //3. M1=M1+M2
     matrix_add(M1, M2, M1, M1row, M1col);
@@ -229,25 +282,27 @@ int main(int argc, const char * argv[])
         // P1
         matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
         
-        matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
-
+        //matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
+        sparce_matrix_multiply(KTr, KTc, KT, M, tmp1, Kcol, Krow, Mcol);
+        
         matrix_add(P1, tmp1, P1, P1row, P1col);
         
         // P2
         matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
         
-        matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
-
+        //matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
+        sparce_matrix_multiply(STr, STc, ST, M, tmp2, Scol, Srow, Mcol);
+        
         matrix_add(P2, tmp2, P2, P2row, P2col);
         
         
         // Q
         matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
         
-        matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
-        
-        matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
-        
+        //matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
+        sparce_matrix_multiply(Kr, Kc, K, P1, tmp3, Krow, Kcol, P1col);
+        //matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
+        sparce_matrix_multiply(Sr, Sc, S, P2, tmp4, Srow, Scol, P2col);
         matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
         
         matrix_multiply2(tmp3, M, tmp5, P1col, Krow, Mcol);
@@ -262,11 +317,11 @@ int main(int argc, const char * argv[])
         
         // M:
         //1. M1=K*P1/|K|
-        matrix_multiply(K, P1, M1, Krow, Kcol, F);
-        
+        //matrix_multiply(K, P1, M1, Krow, Kcol, F);
+        sparce_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
         //2. M2=S*P2/|S|
-        matrix_multiply(S, P2, M2, Srow, Scol, F);
-        
+        //matrix_multiply(S, P2, M2, Srow, Scol, F);
+        sparce_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Scol, F);
         //3. M1=M1+M2
         matrix_add(M1, M2, M1, M1row, M1col);
         
@@ -283,6 +338,266 @@ int main(int argc, const char * argv[])
     
     // write to file
     write_matrix_to_file(M, Mrow, Mcol);
+        
+    }else{
+        
+        int i=0;
+        FILE *fp;
+        
+        
+        // R
+        int Rrow=get_row(R_M);
+        //printf("%d\n",Rrow);
+        fp=fopen(R_M, "r");
+        int Rcol=get_column(fp);
+        //printf("%d\n",Rcol);
+        double **R = (double **)malloc(sizeof(double)*Rrow);
+        for (i=0; i<Rrow; i++) {
+            R[i]=(double *)malloc(sizeof(double)*Rcol);
+        }
+        //fclose(fp);fp=fopen(R_M, "r");
+        read_matrix_from_file(R, Rrow, Rcol, fp);
+        fclose(fp);
+        /*int m,n;
+         for (m=0; m<Rrow; ++m) {
+         for (n=0; n<Rcol; ++n) {
+         printf("%lf\t",R[m][n]);
+         }
+         printf("\n");
+         }*/
+        
+        
+        // K
+        int Krow=get_row(Keyword_M);
+        fp=fopen(Keyword_M, "r");
+        int Kcol=get_column(fp);
+        double **K = (double **)malloc(sizeof(double)*Krow);
+        for (i=0; i<Krow; i++) {
+            K[i]=(double *)malloc(sizeof(double)*Kcol);
+        }
+        //fclose(fp);fp=fopen(Keyword_M, "r");
+        read_matrix_from_file(K, Krow, Kcol, fp);
+        matrix_times(1/KNORM, K, K, Krow, Kcol);
+        fclose(fp);
+        
+        // S
+        int Srow=get_row(Social_M);
+        fp=fopen(Social_M, "r");
+        int Scol=get_column(fp);
+        double **S = (double **)malloc(sizeof(double)*Srow);
+        for (i=0; i<Srow; i++) {
+            S[i]=(double *)malloc(sizeof(double)*Scol);
+        }
+        //fclose(fp);fp=fopen(Social_M, "r");
+        read_matrix_from_file(S, Srow, Scol, fp);
+        matrix_times(1/SNORM, S, S, Srow, Scol);
+        fclose(fp);
+        
+        // B
+        
+        int Brow=Rrow;
+        int Bcol=Rcol;
+        double **B = (double **)malloc(sizeof(double)*Brow);
+        for (i=0; i<Brow; i++) {
+            B[i]=(double *)malloc(sizeof(double)*Bcol);
+        }
+        random_initialize(B, Brow, Bcol);
+        
+        // P1
+        
+        int P1row=Kcol;
+        int P1col=F;
+        double **P1 = (double **)malloc(sizeof(double)*P1row);
+        for (i=0; i<P1row; i++) {
+            P1[i]=(double *)malloc(sizeof(double)*P1col);
+        }
+        random_initialize(P1, P1row, P1col);
+        
+        // P2
+        
+        int P2row=Scol;
+        int P2col=F;
+        double **P2 = (double **)malloc(sizeof(double)*P2row);
+        for (i=0; i<P2row; i++) {
+            P2[i]=(double *)malloc(sizeof(double)*P2col);
+        }
+        random_initialize(P2, P2row, P2col);
+        
+        // Q
+        
+        int Qrow=F;
+        int Qcol=Rcol;
+        double **Q = (double **)malloc(sizeof(double)*Qrow);
+        for (i=0; i<Qrow; i++) {
+            Q[i]=(double *)malloc(sizeof(double)*Qcol);
+        }
+        random_initialize(Q, Qrow, Qcol);
+        
+        // Calculate M = B+PQ
+        //int j;
+        //1. M1=K*P1/|K|
+        int M1row=Krow;
+        int M1col=F;
+        double **M1 = (double **)malloc(sizeof(double)*M1row);
+        for (i=0; i<M1row; i++) {
+            M1[i]=(double *)malloc(sizeof(double)*M1col);
+        }
+        matrix_multiply(K, P1, M1, Krow, Kcol, F);
+        
+        
+        //2. M2=S*P2/|S|
+        int M2row=Srow;
+        int M2col=F;
+        double **M2 = (double **)malloc(sizeof(double)*M2row);
+        for (i=0; i<M2row; i++) {
+            M2[i]=(double *)malloc(sizeof(double)*M2col);
+        }
+        matrix_multiply(S, P2, M2, Srow, Scol, F);
+        
+        
+        //3. M1=M1+M2
+        matrix_add(M1, M2, M1, M1row, M1col);
+        
+        //4. M = M1*Q
+        int Mrow = Rrow;
+        int Mcol = Rcol;
+        double **M = (double **)malloc(sizeof(double)*Mrow);
+        for (i=0; i<Mrow; i++) {
+            M[i]=(double *)malloc(sizeof(double)*Mcol);
+        }
+        matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
+        
+        //5. M = M+B
+        matrix_add(M, B, M, Mrow, Mcol);
+        
+        
+        
+        // assertion
+        
+        assert(Rrow==Krow);
+        assert(Rrow==Srow);
+        
+        
+        
+        // tmp matrix used for gradient descent calculation
+        
+        
+        //1. tmp0 = M*QT
+        double **tmp0 =(double **)malloc(sizeof(double)*Mrow);
+        for (i=0; i<Mrow; i++) {
+            tmp0[i]=(double *)malloc(sizeof(double)*Qrow);
+        }
+        
+        //2. tmp1 = KT * (M * QT) = P1
+        double **tmp1 = (double **)malloc(sizeof(double)*P1row);
+        for (i=0; i<P1row; i++) {
+            tmp1[i]=(double *)malloc(sizeof(double)*P1col);
+        }
+        
+        
+        //3. tmp2 = ST * (M * QT) = P2
+        double **tmp2 = (double **)malloc(sizeof(double)*P2row);
+        for (i=0; i<P2row; i++) {
+            tmp2[i]=(double *)malloc(sizeof(double)*P2col);
+        }
+        
+        
+        //4. tmp3 = K* P1
+        double **tmp3 = (double **)malloc(sizeof(double)*Krow);
+        for (i=0; i<Krow; i++) {
+            tmp3[i]=(double *)malloc(sizeof(double)*P1col);
+        }
+        
+        
+        //5. tmp4 = S* P2
+        double **tmp4 = (double **)malloc(sizeof(double)*Srow);
+        for (i=0; i<Srow; i++) {
+            tmp4[i]=(double *)malloc(sizeof(double)*P2col);
+        }
+        
+        //6. (tmp3+tmp4)T * M   --- F * Mcol
+        
+        double **tmp5 = (double **)malloc(sizeof(double)*F);
+        for (i=0; i<F; i++) {
+            tmp5[i]=(double *)malloc(sizeof(double)*Mcol);
+        }
+        
+        
+        
+        // Main Process
+        int step=0;
+        double alpha_p=alpha;
+        for (step=0;step<N;step++){
+            
+            //gradient descent
+            
+            // M = R-M
+            matrix_substract(R, M, M, Rrow, Rcol);
+            
+            // M = alpha * M
+            matrix_times(alpha_p, M, M, Mrow, Mcol);
+            
+            //1. tmp0 = M*QT
+            matrix_multiply1(M, Q, tmp0, Mrow, Mcol, Qrow);
+            
+            // P1
+            matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
+            
+            matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
+            
+            matrix_add(P1, tmp1, P1, P1row, P1col);
+            
+            // P2
+            matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
+            
+            matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
+            
+            matrix_add(P2, tmp2, P2, P2row, P2col);
+            
+            
+            // Q
+            matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
+            
+            matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
+            
+            matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
+            
+            matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
+            
+            matrix_multiply2(tmp3, M, tmp5, P1col, Krow, Mcol);
+            
+            matrix_add(Q, tmp5, Q, Qrow, Qcol);
+            
+            
+            // B
+            matrix_times(1-alpha_p*lambda, B, B, Brow, Bcol);
+            matrix_add(M, B, B, Brow, Bcol);
+            
+            
+            // M:
+            //1. M1=K*P1/|K|
+            matrix_multiply(K, P1, M1, Krow, Kcol, F);
+            
+            //2. M2=S*P2/|S|
+            matrix_multiply(S, P2, M2, Srow, Scol, F);
+            
+            //3. M1=M1+M2
+            matrix_add(M1, M2, M1, M1row, M1col);
+            
+            //4. M = M1*Q
+            matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
+            
+            //5. M = M+B
+            matrix_add(M, B, M, Mrow, Mcol);
+            
+            alpha_p*=0.9;
+        }
+        
+        // Generate Model & write to file: model.csv
+        
+        // write to file
+        write_matrix_to_file(M, Mrow, Mcol);
     
+    }
     return 0;
 }

@@ -32,7 +32,12 @@ void random_initialize(double **A,int m,int n);
 void matrix_multiply1(double** A, double** B, double** ans,int m,int k,int n);
 void matrix_multiply2(double** A, double** B, double** ans,int m,int k,int n);
 void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n);
+void read_sparse_matrix(int* i,int* j,double* value,FILE *fp);
+void sparse_matrix_times(double c, double* A, int n);
 
+//rewrite multiply & multiply2 with sparce matrix as the first parameter:
+void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n);
+//int get_sparse_row(char* s);  <=>  int get_row(char* s);
 
 // ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n){
@@ -246,6 +251,61 @@ void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n){
             }
             ans[i1][i2]=tmp;
         }
+    }
+}
+
+void read_sparse_matrix(int* i,int* j,double* value,FILE *fp){
+    char *line;
+    fseek(fp, 0, SEEK_SET);
+    line=readline(fp);
+    int m=0;
+    char *p;
+    while (strlen(line)!=0) {
+        //printf("line: %s\n",line);
+        int index=0;
+        p=read_next_token(line, index);
+        //printf("p:%s\t",p);
+        index+=(1+strlen(p));
+        i[m]=atoi(p);
+        p=read_next_token(line, index);
+        //printf("p:%s\t",p);
+        index+=(1+strlen(p));
+        j[m]=atoi(p);
+        p=read_next_token(line, index);
+        //printf("p:%s\t",p);
+        index+=(1+strlen(p));
+        value[m]=atof(p);
+        m++;
+        line=readline(fp);
+        //printf("\n");
+    }
+}
+
+void sparse_matrix_times(double c, double* A, int n){
+    int i;
+    for (i=0; i<n; i++) {
+        A[i]*=c;
+    }
+}
+
+void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n){
+    int i1,i2;
+    int index=0;
+    for (i1=0; i1<n; i1++) {
+        for (i2=0; i2<m; i2++) {
+            if (row[index]>i2) continue;
+            int tmp=0;
+            int j1;
+            for (j1=0; j1<k; j1++) {
+                if(col[index]>j1) continue;
+                else if(col[index]==j1){
+                    tmp+=A[index]*B[j1][i1];
+                    index++;
+                }
+            }
+            ans[i2][i1]=tmp;
+        }
+        index=0;
     }
 }
 
