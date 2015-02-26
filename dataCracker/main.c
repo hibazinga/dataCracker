@@ -95,6 +95,7 @@ int main(int argc, const char * argv[])
     //KT
     
     fp=fopen(Keyword_MT, "r");
+        read_row_and_column(fp, RC);
     int* KTr=(int *)malloc(Kline*sizeof(int));
     int* KTc=(int *)malloc(Kline*sizeof(int));
     double* KT=(double *)malloc(Kline*sizeof(double));
@@ -133,6 +134,7 @@ int main(int argc, const char * argv[])
     
     //ST
     fp=fopen(Social_MT, "r");
+        read_row_and_column(fp, RC);
     int* STr=(int *)malloc(Sline*sizeof(int));
     int* STc=(int *)malloc(Sline*sizeof(int));
     double* ST=(double *)malloc(Sline*sizeof(double));
