@@ -34,7 +34,7 @@ int main(int argc, const char * argv[])
     int i=0;
     FILE *fp;
         int *RC = (int *)malloc(2*sizeof(int));
-    
+        //memset(RC, 0, sizeof(int)*2);
     
     // R
     //int Rrow=get_row(R_M);
@@ -194,7 +194,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<M1row; i++) {
         M1[i]=(double *)malloc(sizeof(double)*M1col);
     }
-    
+    //memset(M1, 0, sizeof(int)*M1row*M1col);
     //matrix_multiply(K, P1, M1, Krow, Kcol, F);
     sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
     
@@ -205,6 +205,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<M2row; i++) {
         M2[i]=(double *)malloc(sizeof(double)*M2col);
     }
+    //memset(M2, 0, sizeof(int)*M1row*M1col);
     //matrix_multiply(S, P2, M2, Srow, Scol, F);
     sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F);
     
