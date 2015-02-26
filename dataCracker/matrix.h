@@ -102,14 +102,20 @@ void read_matrix_from_file(double **A,int m,int n,FILE *fp){
     char *line;
     int i=0;
     int j=0;
-    while ((line=readline(fp))) {
+    fseek(fp, 0, SEEK_SET);
+    line=readline(fp);
+    while (strlen(line)!=0) {
+        //printf("line: %s\n",line);
         int index=0;
         for (j=0; j<n; j++) {
             char *p=read_next_token(line, index);
+            //printf("p:%s\t",p);
             index+=(1+strlen(p));
             A[i][j]=atof(p);
         }
         i++;
+        line=readline(fp);
+        //printf("\n");
     }
 }
 
@@ -120,7 +126,7 @@ void random_initialize(double **A,int m,int n){
     int i,j;
     for (i=0; i<m; i++) {
         for (j=0; j<n; j++) {
-            A[i][j]=RAND_MAX/rand();
+            A[i][j]=rand()%2;
         }
     }
 }
@@ -155,20 +161,25 @@ int get_row(char *filename){
     fgets(buffer,sizeof(buffer),fp);
     pclose(fp);
     int row= atoi(buffer);
-    return row;
+    return row+1;
 }
 
 char* readline(FILE* f)
 {
-    char* line = (char*) calloc(1, sizeof(char) );
+    char* line = (char*) calloc(8, sizeof(char) );
     char c;
-    int len = 0;
+    int len = 128;
+    int index=0;
     while ( (c = fgetc(f) ) != EOF && c != '\n')
     {
-        line = (char*) realloc(line, sizeof(char) * (len + 2) );
-        line[len++] = c;
-        line[len] = '\0';
+        //printf("%c",c);
+        if (index>=len) {
+            len*=2;
+            line = (char*) realloc(line, sizeof(char) * len );
+        }
+        line[index++] = c;
     }
+    line[index]='\0';
     return line;
 }
 
@@ -176,7 +187,7 @@ char* read_next_token(char *line,int index){
     char* token = (char*) calloc(1, sizeof(char) );
     int len=0;
     while (line[index]!='\0' && line[index]!='\t') {
-        token = (char*) realloc(token, sizeof(char) * (len + 2) );
+        token = (char*) realloc(token, sizeof(char) * (len + 1) );
         token[len++] = line[index++];
         token[len] = '\0';
     }

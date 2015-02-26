@@ -14,13 +14,13 @@
 #define KNORM 10    // matrix norm of K calculated by matlab
 #define SNORM 10    //            --  S --
 #define F 128       // # of latent factors 64 or 128
-#define N 1000      // # of iterations
+#define N 100000      // # of iterations
 #define alpha 0.02  // learning rate
 #define lambda 0.01 // normalization factor
 
-#define Keyword_M "Keyword_matrix"
-#define Social_M "Social_matrix"
-#define R_M "Rui_matrix"
+#define Keyword_M "K.csv"
+#define Social_M "S.csv"
+#define R_M "R.csv"
 
 
 int main(int argc, const char * argv[])
@@ -33,14 +33,24 @@ int main(int argc, const char * argv[])
     
     // R
     int Rrow=get_row(R_M);
+    //printf("%d\n",Rrow);
     fp=fopen(R_M, "r");
     int Rcol=get_column(fp);
+    //printf("%d\n",Rcol);
     double **R = (double **)malloc(sizeof(double)*Rrow);
     for (i=0; i<Rrow; i++) {
         R[i]=(double *)malloc(sizeof(double)*Rcol);
     }
+    //fclose(fp);fp=fopen(R_M, "r");
     read_matrix_from_file(R, Rrow, Rcol, fp);
     fclose(fp);
+    /*int m,n;
+    for (m=0; m<Rrow; ++m) {
+        for (n=0; n<Rcol; ++n) {
+            printf("%lf\t",R[m][n]);
+        }
+        printf("\n");
+    }*/
     
     
     // K
@@ -51,6 +61,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<Krow; i++) {
         K[i]=(double *)malloc(sizeof(double)*Kcol);
     }
+    //fclose(fp);fp=fopen(Keyword_M, "r");
     read_matrix_from_file(K, Krow, Kcol, fp);
     matrix_times(1/KNORM, K, K, Krow, Kcol);
     fclose(fp);
@@ -63,6 +74,7 @@ int main(int argc, const char * argv[])
     for (i=0; i<Srow; i++) {
         S[i]=(double *)malloc(sizeof(double)*Scol);
     }
+    //fclose(fp);fp=fopen(Social_M, "r");
     read_matrix_from_file(S, Srow, Scol, fp);
     matrix_times(1/SNORM, S, S, Srow, Scol);
     fclose(fp);
@@ -198,7 +210,6 @@ int main(int argc, const char * argv[])
     
     
     
-    
     // Main Process
     int step=0;
     double alpha_p=alpha;
@@ -219,14 +230,14 @@ int main(int argc, const char * argv[])
         matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
         
         matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
-        
+
         matrix_add(P1, tmp1, P1, P1row, P1col);
         
         // P2
         matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
         
         matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
-        
+
         matrix_add(P2, tmp2, P2, P2row, P2col);
         
         
@@ -239,7 +250,7 @@ int main(int argc, const char * argv[])
         
         matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
         
-        matrix_multiply2(tmp3, M, tmp5, P1col, P1row, Mcol);
+        matrix_multiply2(tmp3, M, tmp5, P1col, Krow, Mcol);
         
         matrix_add(Q, tmp5, Q, Qrow, Qcol);
         
