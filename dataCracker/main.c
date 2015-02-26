@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "matrix.h"
 #include <assert.h>
+#include <time.h>
 
 #define KNORM 10    // matrix norm of K calculated by matlab
 #define SNORM 10    //            --  S --
@@ -200,7 +201,7 @@ int main(int argc, const char * argv[])
     
     // Main Process
     int step=0;
-    int alpha_p=alpha;
+    double alpha_p=alpha;
     for (step=0;step<N;step++){
         
         //gradient descent
