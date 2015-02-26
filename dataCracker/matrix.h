@@ -36,8 +36,12 @@ void read_sparse_matrix(int* i,int* j,double* value,FILE *fp);
 void sparse_matrix_times(double c, double* A, int n);
 
 //rewrite multiply & multiply2 with sparce matrix as the first parameter:
-void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n);
+
+void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n);
+
 //int get_sparse_row(char* s);  <=>  int get_row(char* s);
+void sparse_matrix_substract(int* row,int* col,double* A, double** B, double** ans,int m,int n);
+void read_row_and_column(FILE *fp,int *A);
 
 // ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n){
@@ -297,6 +301,7 @@ void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** an
             int tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
+                if(row[index]>i2) break;
                 if(col[index]>j1) continue;
                 else if(col[index]==j1){
                     tmp+=A[index]*B[j1][i1];
@@ -309,4 +314,27 @@ void sparce_matrix_multiply(int* row,int* col,double* A, double** B, double** an
     }
 }
 
+void sparse_matrix_substract(int* row,int* col,double* A, double** B, double** ans,int m,int n){
+    int i,j;
+    int index=0;
+    for (i=0; i<m; i++) {
+        if(row[index]>i) continue;
+        for (j=0; j<n; j++) {
+            if(row[index]>i) break;
+            if(col[index]>j) continue;
+            ans[i][j]=A[index++]-B[i][j];
+        }
+    }
+}
+void read_row_and_column(FILE *fp,int *A){
+    char *line = readline(fp);
+    int index=0;
+    int j;
+    for (j=0; j<2; j++) {
+        char *p=read_next_token(line, index);
+        //printf("p:%s\t",p);
+        index+=(1+strlen(p));
+        A[j]=atof(p);
+    }
 
+}

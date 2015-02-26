@@ -31,11 +31,11 @@ int main(int argc, const char * argv[])
     //LFM Model
     if (SPARSE){
         
-        const int Krow = 100;
-        const int Kcol = 100;
+        const int Krow = 3;
+        const int Kcol = 6;
         
-        const int Srow = 100;
-        const int Scol = 100;
+        const int Srow = 3;
+        const int Scol = 6;
         
     int i=0;
     FILE *fp;
@@ -182,7 +182,7 @@ int main(int argc, const char * argv[])
     }
     
     //matrix_multiply(K, P1, M1, Krow, Kcol, F);
-    sparce_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
+    sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
     
     //2. M2=S*P2/|S|
     int M2row=Srow;
@@ -192,7 +192,7 @@ int main(int argc, const char * argv[])
         M2[i]=(double *)malloc(sizeof(double)*M2col);
     }
     //matrix_multiply(S, P2, M2, Srow, Scol, F);
-    sparce_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F);
+    sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F);
     
     //3. M1=M1+M2
     matrix_add(M1, M2, M1, M1row, M1col);
@@ -283,7 +283,7 @@ int main(int argc, const char * argv[])
         matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
         
         //matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
-        sparce_matrix_multiply(KTr, KTc, KT, M, tmp1, Kcol, Krow, Mcol);
+        sparse_matrix_multiply(KTr, KTc, KT, M, tmp1, Kcol, Krow, Mcol);
         
         matrix_add(P1, tmp1, P1, P1row, P1col);
         
@@ -291,7 +291,7 @@ int main(int argc, const char * argv[])
         matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
         
         //matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
-        sparce_matrix_multiply(STr, STc, ST, M, tmp2, Scol, Srow, Mcol);
+        sparse_matrix_multiply(STr, STc, ST, M, tmp2, Scol, Srow, Mcol);
         
         matrix_add(P2, tmp2, P2, P2row, P2col);
         
@@ -300,9 +300,9 @@ int main(int argc, const char * argv[])
         matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
         
         //matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
-        sparce_matrix_multiply(Kr, Kc, K, P1, tmp3, Krow, Kcol, P1col);
+        sparse_matrix_multiply(Kr, Kc, K, P1, tmp3, Krow, Kcol, P1col);
         //matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
-        sparce_matrix_multiply(Sr, Sc, S, P2, tmp4, Srow, Scol, P2col);
+        sparse_matrix_multiply(Sr, Sc, S, P2, tmp4, Srow, Scol, P2col);
         matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
         
         matrix_multiply2(tmp3, M, tmp5, P1col, Krow, Mcol);
@@ -318,10 +318,10 @@ int main(int argc, const char * argv[])
         // M:
         //1. M1=K*P1/|K|
         //matrix_multiply(K, P1, M1, Krow, Kcol, F);
-        sparce_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
+        sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
         //2. M2=S*P2/|S|
         //matrix_multiply(S, P2, M2, Srow, Scol, F);
-        sparce_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Scol, F);
+        sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Scol, F);
         //3. M1=M1+M2
         matrix_add(M1, M2, M1, M1row, M1col);
         
