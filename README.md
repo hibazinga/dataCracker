@@ -6,9 +6,10 @@
 
 1. Before make, modify the file path in main.c (macros #define)!
 
-2.  *$ make clean
-     *$ make
-     *$ ./a.out
+2.  
+> $ make clean
+> $ make
+> $ ./a.out
 
 3. The program will generate a trained model and write to ./model.csv
 
@@ -25,7 +26,7 @@
 * ./Pre-processing/step6.py
 * ./Pre-processing/step7.py
 
-1. Filter noise records in the training set
+1.Filter noise records in the training set
 
 Explanation: In the training set, if the records of a user is all positive or all negative, we regard these records as useless. In this case, all records of this user should be deleted from the file.
 
@@ -33,7 +34,7 @@ Explanation: In the training set, if the records of a user is all positive or al
 *Output file: 	rec_log_train_pre_1.txt
 
 
-2. Filter inactive users
+2.Filter inactive users
 
 Explanation: Dummy users are the users who have neither followers nor followees. Find out all dummy users in user_sns.txt and delete their records from the training set.
 
@@ -41,7 +42,7 @@ Explanation: Dummy users are the users who have neither followers nor followees.
 *Output file:	rec_log_train_pre_2.txt
 
       
-3. Time-based session slicing
+3.Time-based session slicing
 
 Explanation: Not all the negative ratings imply that the users rejected to follow the recommended items. Instead, users may be attracted to other interesting things on the Weibo website, and during these sessions, the recommended items were omitted by users. Use the session slicing method described in the paper (Shanda, Section 3.1) to remove noise data. 
 
@@ -56,7 +57,7 @@ Moreover, if a session only contains negative records or contains more than 90% 
 *Output file: 	rec_log_train_pre_3.txt
 
 
-4. Data assignment to different groups
+4.Data assignment to different groups
 
 Explanation: After the data filtering in the former steps, the remaining data in the training set as well as other supplement data files should be divided in 13 group according to users? gender and age, which can be looked up in user_profile.txt .
 
@@ -70,14 +71,14 @@ Explanation: After the data filtering in the former steps, the remaining data in
 		
 		
 
-5. Dimension Reduction for user-keyword matrix
+5.Dimension Reduction for user-keyword matrix
 **Explanation: For each user, we only utilize his top 5 keywords. Get the union of the keywords, and construct a user-keyword matrix K in the output file. if user i has keyword j, K(i, j)= weight; otherwise, K(i, j) = 0.
 
 *Input file:		user_key_word_1.txt	--	user_key_word_13.txt
 *Output file:	user_key_word_1.csv	--	user_key_word_13.csv
 
 
-6. Construction for user-user matrix
+6.Construction for user-user matrix
 **Explanation: construct the user action matrixes S based on the actions (follow, at, comment, retweet) of each user.
 
 S(i, j) = 10*Follow + 2*Nat + 0.2*Ncomment + 1*Nretweet
