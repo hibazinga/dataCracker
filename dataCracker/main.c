@@ -11,13 +11,15 @@
 #include <assert.h>
 #include <time.h>
 
-#define KNORM 1    // matrix norm of K calculated by matlab
-#define SNORM 1    //            --  S --
+//#define KNORM 1    // matrix norm of K calculated by matlab
+//#define SNORM 1    //            --  S --
 #define F 128       // # of latent factors 64 or 128
 #define N 1         // # of iterations
 #define alpha -0.01  // learning rate
 #define lambda 0.01 // normalization factor
 
+
+/* --- CHANGE IT WITH YOUR FILE PATH! ---*/
 #define Keyword_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/user_key_word_13_ij.txt"
 #define Social_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/S_13_nu_n.txt"
 #define Keyword_MT "/Users/ybren/Desktop/dataCracker/dataCracker/pre/user_key_word_13_ji.txt"
@@ -31,26 +33,45 @@
 #define Social_MT "ST.csv"
 #define R_M "R.csv"
 */
+
 #define SPARSE 1
+
+
+/***********************
+ 
+ Matrix:
+ 
+ R = Rrow * Rcol = All User * All Item
+ 
+ K = Krow * Kcol = Group User * Keyword
+ 
+ KT = Kcol * Krow
+ 
+ S = Srow * Scol = Group User * All User
+ 
+ ST = Scol * Srow
+ 
+ P1 = Kcol * F
+ 
+ P2 = Scol * F
+ 
+ Q = F * Rcol
+ 
+ *************************/
 
 int main(int argc, const char * argv[])
 {
     printf("1\n");
     //LFM Model
-    if (SPARSE){
+    if (SPARSE){ //use sparse matrix
         
-    int i=0;
-    FILE *fp;
+        int i=0;
+        FILE *fp;
         int *RC = (int *)malloc(2*sizeof(int));
-        //memset(RC, 0, sizeof(int)*2);
     
-    // R
-    //int Rrow=get_row(R_M);
-    //printf("%d\n",Rrow);
-        fp=fopen(R_M, "r");
-    //int Rcol=get_column(fp);
-    //printf("%d\n",Rcol);
+        // R - initialize, sparse
         
+        fp=fopen(R_M, "r");
         read_row_and_column(fp, RC);
         const int Rrow=RC[0];
         const int Rcol=RC[1];
@@ -62,138 +83,115 @@ int main(int argc, const char * argv[])
         double* R=(double *)malloc(Rline*sizeof(double));
         read_sparse_matrix(Rr, Rc, R, fp);
         fclose(fp);
-    /*int m,n;
-    for (m=0; m<Rrow; ++m) {
-        for (n=0; n<Rcol; ++n) {
-            printf("%lf\t",R[m][n]);
-        }
-        printf("\n");
-    }*/
-    
-    printf("2\n");
-    // K
-    /*
-    int Krow=get_row(Keyword_M);
-    fp=fopen(Keyword_M, "r");
-    int Kcol=get_column(fp);
-    double **K = (double **)malloc(sizeof(double)*Krow);
-    for (i=0; i<Krow; i++) {
-        K[i]=(double *)malloc(sizeof(double)*Kcol);
-    }
-    //fclose(fp);fp=fopen(Keyword_M, "r");
-    read_matrix_from_file(K, Krow, Kcol, fp);
-    matrix_times(1/KNORM, K, K, Krow, Kcol);
-    fclose(fp);
-     */
-    int Kline=get_row(Keyword_M)-1;
-    fp=fopen(Keyword_M, "r");
+
+        printf("2\n");
+
+        // K - initialize, sparse
+        
+        int Kline=get_row(Keyword_M)-1;
+        fp=fopen(Keyword_M, "r");
         
         read_row_and_column(fp, RC);
         const int Krow=RC[0];
         const int Kcol=RC[1];
         
         
-    int* Kr=(int *)malloc(Kline*sizeof(int));
-    int* Kc=(int *)malloc(Kline*sizeof(int));
-    double* K=(double *)malloc(Kline*sizeof(double));
-    read_sparse_matrix(Kr, Kc, K, fp);
-    sparse_matrix_times(1/KNORM, K, Kline);
-    fclose(fp);
+        int* Kr=(int *)malloc(Kline*sizeof(int));
+        int* Kc=(int *)malloc(Kline*sizeof(int));
+        double* K=(double *)malloc(Kline*sizeof(double));
+        read_sparse_matrix(Kr, Kc, K, fp);
+        //sparse_matrix_times(1/KNORM, K, Kline);
+        fclose(fp);
     
         printf("3\n");
-    //KT
+        
+        //KT - initialize, sparse
     
-    fp=fopen(Keyword_MT, "r");
+        fp=fopen(Keyword_MT, "r");
         read_row_and_column(fp, RC);
-    int* KTr=(int *)malloc(Kline*sizeof(int));
-    int* KTc=(int *)malloc(Kline*sizeof(int));
-    double* KT=(double *)malloc(Kline*sizeof(double));
-    read_sparse_matrix(KTr, KTc, KT, fp);
-    sparse_matrix_times(1/KNORM, KT, Kline);
-    fclose(fp);
+        int* KTr=(int *)malloc(Kline*sizeof(int));
+        int* KTc=(int *)malloc(Kline*sizeof(int));
+        double* KT=(double *)malloc(Kline*sizeof(double));
+        read_sparse_matrix(KTr, KTc, KT, fp);
+        //sparse_matrix_times(1/KNORM, KT, Kline);
+        fclose(fp);
     
-    // S
-    /*
-    int Srow=get_row(Social_M);
-    fp=fopen(Social_M, "r");
-    int Scol=get_column(fp);
-    double **S = (double **)malloc(sizeof(double)*Srow);
-    for (i=0; i<Srow; i++) {
-        S[i]=(double *)malloc(sizeof(double)*Scol);
-    }
-    //fclose(fp);fp=fopen(Social_M, "r");
-    read_matrix_from_file(S, Srow, Scol, fp);
-    matrix_times(1/SNORM, S, S, Srow, Scol);
-    fclose(fp);
-    */
-    int Sline=get_row(Social_M)-1;
-    fp=fopen(Social_M, "r");
+        // S - initialize, sparse
+
+        int Sline=get_row(Social_M)-1;
+        fp=fopen(Social_M, "r");
         
         read_row_and_column(fp, RC);
         const int Srow=RC[0];
         const int Scol=RC[1];
         
         
-    int* Sr=(int *)malloc(Sline*sizeof(int));
-    int* Sc=(int *)malloc(Sline*sizeof(int));
-    double* S=(double *)malloc(Sline*sizeof(double));
-    read_sparse_matrix(Sr, Sc, S, fp);
-    sparse_matrix_times(1/SNORM, S, Sline);
-    fclose(fp);
-    printf("-\n");
-    //ST
-    fp=fopen(Social_MT, "r");
+        int* Sr=(int *)malloc(Sline*sizeof(int));
+        int* Sc=(int *)malloc(Sline*sizeof(int));
+        double* S=(double *)malloc(Sline*sizeof(double));
+        read_sparse_matrix(Sr, Sc, S, fp);
+        //sparse_matrix_times(1/SNORM, S, Sline);
+        fclose(fp);
+        
+        printf("3.5\n");
+    
+        //ST - initialize, sparse
+        
+        fp=fopen(Social_MT, "r");
         read_row_and_column(fp, RC);
-    int* STr=(int *)malloc(Sline*sizeof(int));
-    int* STc=(int *)malloc(Sline*sizeof(int));
-    double* ST=(double *)malloc(Sline*sizeof(double));
-    read_sparse_matrix(STr, STc, ST, fp);
-    sparse_matrix_times(1/SNORM, ST, Sline);
-    fclose(fp);
+        int* STr=(int *)malloc(Sline*sizeof(int));
+        int* STc=(int *)malloc(Sline*sizeof(int));
+        double* ST=(double *)malloc(Sline*sizeof(double));
+        read_sparse_matrix(STr, STc, ST, fp);
+        //sparse_matrix_times(1/SNORM, ST, Sline);
+        fclose(fp);
     
     
-    printf("4\n");
+        printf("4\n");
     
-    // B
+        // B - random_init, matrix
     
-    int Brow=Rrow;
-    int Bcol=Rcol;
-    double **B = (double **)malloc(sizeof(double)*Brow);
-    for (i=0; i<Brow; i++) {
-        B[i]=(double *)malloc(sizeof(double)*Bcol);
-    }
-    random_initialize(B, Brow, Bcol);
+        int Brow=Rrow;
+        int Bcol=Rcol;
+        double **B = (double **)malloc(sizeof(double)*Brow);
+        for (i=0; i<Brow; i++) {
+            B[i]=(double *)malloc(sizeof(double)*Bcol);
+        }
+        random_initialize(B, Brow, Bcol);
     
-    // P1
+        // P1 - random_init, matrix
     
-    int P1row=Kcol;
-    int P1col=F;
-    double **P1 = (double **)malloc(sizeof(double)*P1row);
-    for (i=0; i<P1row; i++) {
-        P1[i]=(double *)malloc(sizeof(double)*P1col);
-    }
-    random_initialize(P1, P1row, P1col);
+        int P1row=Kcol;
+        int P1col=F;
+        double **P1 = (double **)malloc(sizeof(double)*P1row);
+        for (i=0; i<P1row; i++) {
+            P1[i]=(double *)malloc(sizeof(double)*P1col);
+        }
+        random_initialize(P1, P1row, P1col);
     
-    // P2
+        // P2 - random_init, matrix
     
-    int P2row=Scol;
-    int P2col=F;
-    double **P2 = (double **)malloc(sizeof(double)*P2row);
-    for (i=0; i<P2row; i++) {
-        P2[i]=(double *)malloc(sizeof(double)*P2col);
-    }
-    random_initialize(P2, P2row, P2col);
+        int P2row=Scol;
+        int P2col=F;
+        double **P2 = (double **)malloc(sizeof(double)*P2row);
+        for (i=0; i<P2row; i++) {
+            P2[i]=(double *)malloc(sizeof(double)*P2col);
+        }
+        random_initialize(P2, P2row, P2col);
     
-    // Q
+        // Q - random_init, matrix
     
-    int Qrow=F;
-    int Qcol=Rcol;
-    double **Q = (double **)malloc(sizeof(double)*Qrow);
-    for (i=0; i<Qrow; i++) {
-        Q[i]=(double *)malloc(sizeof(double)*Qcol);
-    }
-    random_initialize(Q, Qrow, Qcol);
-    printf("4.1\n");
+        int Qrow=F;
+        int Qcol=Rcol;
+        double **Q = (double **)malloc(sizeof(double)*Qrow);
+        for (i=0; i<Qrow; i++) {
+            Q[i]=(double *)malloc(sizeof(double)*Qcol);
+        }
+        random_initialize(Q, Qrow, Qcol);
+        
+        printf("4.1\n");
+        
+
     // Calculate M = B+PQ
     //int j;
     //1. M1=K*P1/|K|
