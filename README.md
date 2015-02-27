@@ -1,12 +1,8 @@
 # CS249 Proj Data Crackers
 
-*************************************
-*									*
-*			README					*
-*									*
-*************************************
+## README
 
-How to run the code:
+## How to run the code:
 
 1. Before make, modify the file path in main.c (macros #define)!
 
@@ -20,7 +16,7 @@ How to run the code:
 
 
 
-PreProcessing:
+## PreProcessing:
 
 ./Pre-processing/step1.py
 ./Pre-processing/step2.py
@@ -93,7 +89,7 @@ Output file:	user_user_1.csv	--	user_user_13.csv
 
 
 
-LFM Model:
+## LFM Model:
 
 ./dataCracker/matrix.h -- helper functions for matrix op
 
