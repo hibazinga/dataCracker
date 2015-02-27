@@ -17,30 +17,48 @@
 #include <time.h>
 #include <string.h>
 
+// ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n);
+// ans=A-B
 void matrix_substract(double** A, double** B, double** ans,int m,int n);
+// ans=c*A
 void matrix_times(double c, double** A, double** ans, int m,int n);
+// ans=A*B
 void matrix_multiply(double** A, double** B, double** ans,int m,int k,int n);
+
 void write_matrix_to_file(double **A,int m,int n);
+
 void read_matrix_from_file(double **A,int m,int n,FILE *fp);
+
 int get_column(FILE *fp);
 int get_row(char* s);
 char* readline(FILE* f);
 char* read_next_token(char *line,int index);
+
+// Transpose Matrix A -> B,  B = (A)T, A = m*n, B= n*m
 void matrix_transpose(double** A, double** B,int m,int n);
+//initialize matrix with random 0/1
 void random_initialize(double **A,int m,int n);
+// ans=A * BT
 void matrix_multiply1(double** A, double** B, double** ans,int m,int k,int n);
+// ans=AT * B
 void matrix_multiply2(double** A, double** B, double** ans,int m,int k,int n);
+// ans=AT * BT
 void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n);
+
+//read sparse matrix into row[] column[] Value[], from file fp
 void read_sparse_matrix(int* i,int* j,double* value,FILE *fp);
+// A=c*A
 void sparse_matrix_times(double c, double* A, int n);
 
-//rewrite multiply & multiply2 with sparce matrix as the first parameter:
-
+//rewrite multiply with sparce matrix as the first parameter:
 void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length);
 
 //int get_sparse_row(char* s);  <=>  int get_row(char* s);
+
+// B = B - A
 void sparse_matrix_substract(int* row,int* col,double* A, double** B,int length);
+// read row # and col # from the first line of a file fp
 void read_row_and_column(FILE *fp,int *A);
 
 // ans=A+B
@@ -140,7 +158,7 @@ void random_initialize(double **A,int m,int n){
     }
 }
 
-
+//get the column # from the first line
 int get_column(FILE *fp){
     int column=1;
     char *line=readline(fp);
@@ -151,6 +169,8 @@ int get_column(FILE *fp){
     return column;
 }
 
+
+//get the row # with command 'wc -l filename'
 int get_row(char *filename){
     FILE * fp;
     char buffer[10];
@@ -173,6 +193,7 @@ int get_row(char *filename){
     return row+1;
 }
 
+//read a single line from the file ended with a '\n'
 char* readline(FILE* f)
 {
     char* line = (char*) calloc(128, sizeof(char) );
@@ -192,6 +213,8 @@ char* readline(FILE* f)
     return line;
 }
 
+
+//read next toten from a line, starting from index.
 char* read_next_token(char *line,int index){
     char* token = (char*) calloc(1, sizeof(char) );
     int len=0;
@@ -258,6 +281,8 @@ void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n){
     }
 }
 
+
+//read sparse matrix into row[] column[] Value[], from file fp
 void read_sparse_matrix(int* i,int* j,double* value,FILE *fp){
     char *line;
     //fseek(fp, 0, SEEK_SET);
@@ -285,6 +310,8 @@ void read_sparse_matrix(int* i,int* j,double* value,FILE *fp){
     }
 }
 
+
+// A=c*A
 void sparse_matrix_times(double c, double* A, int n){
     int i;
     for (i=0; i<n; i++) {
@@ -292,6 +319,7 @@ void sparse_matrix_times(double c, double* A, int n){
     }
 }
 
+// ans=A*B
 void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length){
     /*int i1,i2;
     int index=0;
@@ -318,12 +346,15 @@ void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** an
     }
 }
 
+// B = B - A
 void sparse_matrix_substract(int* row,int* col,double* A, double** B,int length){
     int index=0;
     for (index=0; index<length; index++) {
         B[row[index]][col[index]]-=A[index];
     }
 }
+
+// read row # and col # from the first line of a file fp
 void read_row_and_column(FILE *fp,int *A){
     char *line = readline(fp);
     int index=0;

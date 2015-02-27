@@ -298,12 +298,20 @@ int main(int argc, const char * argv[])
     printf("6\n");
     
         
-        
+       
         
     // Main Process
     int step=0;
     double alpha_p=alpha;
     for (step=0;step<N;step++){
+        printf("---Step: %d---\n",step);
+        
+        //time Stamp
+        time_t t = time(0);
+        char tmp[64];
+        strftime( tmp, sizeof(tmp), "%Y/%m/%d %X %A [%j day of this year] TimeZone:%z",localtime(&t) );
+        puts( tmp );
+        
         
         for (i=0; i<M1row; i++) {
             memset(M1[i], 0, sizeof(double)*M1col);
@@ -419,7 +427,6 @@ int main(int argc, const char * argv[])
             memset(tmp4[i],0, sizeof(double)*P2col);
         }
 
-        
         alpha_p*=0.9;
     }
     
