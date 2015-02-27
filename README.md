@@ -13,7 +13,6 @@
 3. The program will generate a trained model and write to ./model.csv
 
 
-
 ***
 
 ## PreProcessing:
