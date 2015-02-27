@@ -300,13 +300,6 @@ int main(int argc, const char * argv[])
         
         
         
-        
-        
-        struct timespec currentTime;
-        clock_gettime(0,&currentTime);
-        
-        
-        
     // Main Process
     int step=0;
     double alpha_p=alpha;
