@@ -37,10 +37,10 @@ void sparse_matrix_times(double c, double* A, int n);
 
 //rewrite multiply & multiply2 with sparce matrix as the first parameter:
 
-void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n);
+void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length);
 
 //int get_sparse_row(char* s);  <=>  int get_row(char* s);
-void sparse_matrix_substract(int* row,int* col,double* A, double** B, double** ans,int m,int n);
+void sparse_matrix_substract(int* row,int* col,double* A, double** B,int length);
 void read_row_and_column(FILE *fp,int *A);
 
 // ans=A+B
@@ -175,7 +175,7 @@ int get_row(char *filename){
 
 char* readline(FILE* f)
 {
-    char* line = (char*) calloc(8, sizeof(char) );
+    char* line = (char*) calloc(128, sizeof(char) );
     char c;
     int len = 128;
     int index=0;
@@ -292,12 +292,12 @@ void sparse_matrix_times(double c, double* A, int n){
     }
 }
 
-void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n){
-    int i1,i2;
+void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length){
+    /*int i1,i2;
     int index=0;
     for (i1=0; i1<n; i1++) {
         for (i2=0; i2<m; i2++) {
-            if (row[index]>i2) continue;
+            if (row[index]>i2) {continue;}
             int tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
@@ -311,19 +311,17 @@ void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** an
             ans[i2][i1]=tmp;
         }
         index=0;
+    }*/
+    for(int i = 0; i < length; i ++) {
+        for(int j = 0; j < n; j++)
+            ans[row[i]][j] += A[i] * B[col[i]][j];
     }
 }
 
-void sparse_matrix_substract(int* row,int* col,double* A, double** B, double** ans,int m,int n){
-    int i,j;
+void sparse_matrix_substract(int* row,int* col,double* A, double** B,int length){
     int index=0;
-    for (i=0; i<m; i++) {
-        if(row[index]>i) continue;
-        for (j=0; j<n; j++) {
-            if(row[index]>i) break;
-            if(col[index]>j) continue;
-            ans[i][j]=A[index++]-B[i][j];
-        }
+    for (index=0; index<length; index++) {
+        B[row[index]][col[index]]-=A[index];
     }
 }
 void read_row_and_column(FILE *fp,int *A){
@@ -334,7 +332,7 @@ void read_row_and_column(FILE *fp,int *A){
         char *p=read_next_token(line, index);
         //printf("p:%s\t",p);
         index+=(1+strlen(p));
-        A[j]=atof(p);
+        A[j]=atoi(p);
     }
 
 }

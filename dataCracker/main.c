@@ -11,23 +11,31 @@
 #include <assert.h>
 #include <time.h>
 
-#define KNORM 10    // matrix norm of K calculated by matlab
-#define SNORM 10    //            --  S --
+#define KNORM 1    // matrix norm of K calculated by matlab
+#define SNORM 1    //            --  S --
 #define F 128       // # of latent factors 64 or 128
-#define N 1000      // # of iterations
-#define alpha 0.02  // learning rate
+#define N 1         // # of iterations
+#define alpha -0.01  // learning rate
 #define lambda 0.01 // normalization factor
 
-#define Keyword_M "K.csv"
-#define Social_M "S.csv"
-#define Keyword_MT "K.csv"
-#define Social_MT "S.csv"
-#define R_M "R.csv"
+#define Keyword_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/user_key_word_13_ij.txt"
+#define Social_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/S_13_nu_n.txt"
+#define Keyword_MT "/Users/ybren/Desktop/dataCracker/dataCracker/pre/user_key_word_13_ji.txt"
+#define Social_MT "/Users/ybren/Desktop/dataCracker/dataCracker/pre/S_13_n_nu.txt"
+#define R_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/Rui_13_nm.txt"
 
+
+/*#define Keyword_M "K.csv"
+#define Social_M "S.csv"
+#define Keyword_MT "KT.csv"
+#define Social_MT "ST.csv"
+#define R_M "R.csv"
+*/
 #define SPARSE 1
 
 int main(int argc, const char * argv[])
 {
+    printf("1\n");
     //LFM Model
     if (SPARSE){
         
@@ -48,7 +56,7 @@ int main(int argc, const char * argv[])
         const int Rcol=RC[1];
         
     
-        int Rline=get_row(R_M);
+        int Rline=get_row(R_M)-1;
         int* Rr=(int *)malloc(Rline*sizeof(int));
         int* Rc=(int *)malloc(Rline*sizeof(int));
         double* R=(double *)malloc(Rline*sizeof(double));
@@ -62,7 +70,7 @@ int main(int argc, const char * argv[])
         printf("\n");
     }*/
     
-    
+    printf("2\n");
     // K
     /*
     int Krow=get_row(Keyword_M);
@@ -77,7 +85,7 @@ int main(int argc, const char * argv[])
     matrix_times(1/KNORM, K, K, Krow, Kcol);
     fclose(fp);
      */
-    int Kline=get_row(Keyword_M);
+    int Kline=get_row(Keyword_M)-1;
     fp=fopen(Keyword_M, "r");
         
         read_row_and_column(fp, RC);
@@ -92,6 +100,7 @@ int main(int argc, const char * argv[])
     sparse_matrix_times(1/KNORM, K, Kline);
     fclose(fp);
     
+        printf("3\n");
     //KT
     
     fp=fopen(Keyword_MT, "r");
@@ -117,8 +126,8 @@ int main(int argc, const char * argv[])
     matrix_times(1/SNORM, S, S, Srow, Scol);
     fclose(fp);
     */
-    int Sline=get_row(Social_M);
-    fp=fopen(Keyword_M, "r");
+    int Sline=get_row(Social_M)-1;
+    fp=fopen(Social_M, "r");
         
         read_row_and_column(fp, RC);
         const int Srow=RC[0];
@@ -131,7 +140,7 @@ int main(int argc, const char * argv[])
     read_sparse_matrix(Sr, Sc, S, fp);
     sparse_matrix_times(1/SNORM, S, Sline);
     fclose(fp);
-    
+    printf("-\n");
     //ST
     fp=fopen(Social_MT, "r");
         read_row_and_column(fp, RC);
@@ -143,7 +152,7 @@ int main(int argc, const char * argv[])
     fclose(fp);
     
     
-    
+    printf("4\n");
     
     // B
     
@@ -184,7 +193,7 @@ int main(int argc, const char * argv[])
         Q[i]=(double *)malloc(sizeof(double)*Qcol);
     }
     random_initialize(Q, Qrow, Qcol);
-    
+    printf("4.1\n");
     // Calculate M = B+PQ
     //int j;
     //1. M1=K*P1/|K|
@@ -193,22 +202,24 @@ int main(int argc, const char * argv[])
     double **M1 = (double **)malloc(sizeof(double)*M1row);
     for (i=0; i<M1row; i++) {
         M1[i]=(double *)malloc(sizeof(double)*M1col);
+        memset(M1[i], 0, sizeof(double)*M1col);
     }
-    //memset(M1, 0, sizeof(int)*M1row*M1col);
-    //matrix_multiply(K, P1, M1, Krow, Kcol, F);
-    sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
     
+    //matrix_multiply(K, P1, M1, Krow, Kcol, F);
+    sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F, Kline);
+    printf("4.2\n");
     //2. M2=S*P2/|S|
     int M2row=Srow;
     int M2col=F;
     double **M2 = (double **)malloc(sizeof(double)*M2row);
     for (i=0; i<M2row; i++) {
         M2[i]=(double *)malloc(sizeof(double)*M2col);
+        memset(M2[i], 0, sizeof(double)*M2col);
     }
-    //memset(M2, 0, sizeof(int)*M1row*M1col);
-    //matrix_multiply(S, P2, M2, Srow, Scol, F);
-    sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F);
     
+    //matrix_multiply(S, P2, M2, Srow, Scol, F);
+    sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Kcol, F,Sline);
+    printf("4.3\n");
     //3. M1=M1+M2
     matrix_add(M1, M2, M1, M1row, M1col);
     
@@ -220,12 +231,12 @@ int main(int argc, const char * argv[])
         M[i]=(double *)malloc(sizeof(double)*Mcol);
     }
     matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
-    
+    printf("4.4\n");
     //5. M = M+B
     matrix_add(M, B, M, Mrow, Mcol);
     
     
-    
+    printf("5\n");
     // assertion
     
     assert(Rrow==Krow);
@@ -240,112 +251,181 @@ int main(int argc, const char * argv[])
     double **tmp0 =(double **)malloc(sizeof(double)*Mrow);
     for (i=0; i<Mrow; i++) {
         tmp0[i]=(double *)malloc(sizeof(double)*Qrow);
+        memset(tmp0[i], 0, sizeof(double)*Qrow);
     }
-    
+        
     //2. tmp1 = KT * (M * QT) = P1
     double **tmp1 = (double **)malloc(sizeof(double)*P1row);
     for (i=0; i<P1row; i++) {
         tmp1[i]=(double *)malloc(sizeof(double)*P1col);
+        memset(tmp1[i], 0, sizeof(double)*P1col);
     }
+        
 
     
     //3. tmp2 = ST * (M * QT) = P2
     double **tmp2 = (double **)malloc(sizeof(double)*P2row);
     for (i=0; i<P2row; i++) {
         tmp2[i]=(double *)malloc(sizeof(double)*P2col);
+        memset(tmp2[i], 0, sizeof(double)*P2col);
     }
-    
+        
     
     //4. tmp3 = K* P1
     double **tmp3 = (double **)malloc(sizeof(double)*Krow);
     for (i=0; i<Krow; i++) {
         tmp3[i]=(double *)malloc(sizeof(double)*P1col);
+        memset(tmp3[i], 0, sizeof(double)*P1col);
     }
-    
+        
     
     //5. tmp4 = S* P2
     double **tmp4 = (double **)malloc(sizeof(double)*Srow);
     for (i=0; i<Srow; i++) {
         tmp4[i]=(double *)malloc(sizeof(double)*P2col);
+        memset(tmp4[i],0, sizeof(double)*P2col);
     }
-
-    //6. (tmp3+tmp4)T * M   --- F * Mcol
+        
+    //6. tmp5=(tmp3+tmp4)T * M   --- F * Mcol
     
     double **tmp5 = (double **)malloc(sizeof(double)*F);
     for (i=0; i<F; i++) {
         tmp5[i]=(double *)malloc(sizeof(double)*Mcol);
+        memset(tmp5[i], 0, sizeof(double)*Mcol);
     }
+        
     
+    printf("6\n");
     
-    
+        
+        
+        
+        
+        
+        struct timespec currentTime;
+        clock_gettime(0,&currentTime);
+        
+        
+        
     // Main Process
     int step=0;
     double alpha_p=alpha;
     for (step=0;step<N;step++){
         
+        for (i=0; i<M1row; i++) {
+            memset(M1[i], 0, sizeof(double)*M1col);
+        }
+        for (i=0; i<M2row; i++) {
+            memset(M2[i], 0, sizeof(double)*M2col);
+        }
+        
+        
+        printf("7\n");
         //gradient descent
         
         // M = R-M
         //matrix_substract(R, M, M, Rrow, Rcol);
-        sparse_matrix_substract(Rr, Rc, R, M, M, Rrow, Rcol);
-        
+        sparse_matrix_substract(Rr, Rc, R, M, Rline);
+        printf("7.1\n");
         // M = alpha * M
         matrix_times(alpha_p, M, M, Mrow, Mcol);
-        
+        printf("7.2\n");
         //1. tmp0 = M*QT
         matrix_multiply1(M, Q, tmp0, Mrow, Mcol, Qrow);
-        
+        printf("7.3\n");
         // P1
-        matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
-        
+        matrix_times(1+alpha_p*lambda, P1, P1, P1row, P1col);
+        printf("7.4\n");
         //matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
-        sparse_matrix_multiply(KTr, KTc, KT, M, tmp1, Kcol, Krow, Mcol);
+        sparse_matrix_multiply(KTr, KTc, KT, tmp0, tmp1, Kcol, Krow, Mcol, Kline);
         
         matrix_add(P1, tmp1, P1, P1row, P1col);
-        
+        printf("7.5\n");
         // P2
-        matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
-        
+        matrix_times(1+alpha_p*lambda, P2, P2, P2row, P2col);
+        printf("7.5.1\n");
         //matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
-        sparse_matrix_multiply(STr, STc, ST, M, tmp2, Scol, Srow, Mcol);
         
+        
+        printf("ST: %d, %d\n", Scol,Srow);
+        printf("M : %d, %d\n", Mrow, Mcol);
+        printf("tmp2: %d, %d\n",P2row, P2col);
+        
+        i=0;int max1=-1,max2=-1;
+        for (i=0; i<Sline; i++) {
+            max1=STr[i]>max1?STr[i]:max1;
+            max2=STc[i]>max2?STc[i]:max2;
+        }
+        printf("MAX ROW: %d,  MAX COL: %d\n",max1, max2);
+        
+        printf("%lf %lf \n", M[Mrow-1][Mcol-1], tmp2[P2row-1][P2col-1]);
+        
+        
+        
+        
+        
+        
+        sparse_matrix_multiply(STr, STc, ST, tmp0, tmp2, Scol, Srow, Mcol, Sline);
+        printf("7.6\n");
         matrix_add(P2, tmp2, P2, P2row, P2col);
-        
+        printf("7.7\n");
         
         // Q
-        matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
-        
+        matrix_times(1+alpha_p*lambda, Q, Q, Qrow, Qcol);
+        printf("7.8\n");
         //matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
-        sparse_matrix_multiply(Kr, Kc, K, P1, tmp3, Krow, Kcol, P1col);
+        sparse_matrix_multiply(Kr, Kc, K, P1, tmp3, Krow, Kcol, P1col,Kline);
         //matrix_multiply(S, P2, tmp4, Srow, Scol, P2col);
-        sparse_matrix_multiply(Sr, Sc, S, P2, tmp4, Srow, Scol, P2col);
+        sparse_matrix_multiply(Sr, Sc, S, P2, tmp4, Srow, Scol, P2col,Sline );
         matrix_add(tmp3, tmp4, tmp3, Krow, P1col);
-        
+        printf("7.9\n");
         matrix_multiply2(tmp3, M, tmp5, P1col, Krow, Mcol);
-        
+        printf("7.10\n");
         matrix_add(Q, tmp5, Q, Qrow, Qcol);
         
         
         // B
-        matrix_times(1-alpha_p*lambda, B, B, Brow, Bcol);
+        matrix_times(1+alpha_p*lambda, B, B, Brow, Bcol);
         matrix_add(M, B, B, Brow, Bcol);
-        
+        printf("7.11\n");
         
         // M:
         //1. M1=K*P1/|K|
         //matrix_multiply(K, P1, M1, Krow, Kcol, F);
-        sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F);
+        sparse_matrix_multiply(Kr, Kc, K, P1, M1, Krow, Kcol, F,Kline);
+        printf("7.12\n");
         //2. M2=S*P2/|S|
         //matrix_multiply(S, P2, M2, Srow, Scol, F);
-        sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Scol, F);
+        sparse_matrix_multiply(Sr, Sc, S, P2, M2, Srow, Scol, F,Sline);
+        
+        printf("7.13\n");
+        
         //3. M1=M1+M2
         matrix_add(M1, M2, M1, M1row, M1col);
+        printf("7.14\n");
         
         //4. M = M1*Q
         matrix_multiply(M1, Q, M, M1row, M1col, Qcol);
-        
+        printf("7.15\n");
         //5. M = M+B
         matrix_add(M, B, M, Mrow, Mcol);
+        printf("7.16\n");
+        
+        
+        
+        for (i=0; i<P1row; i++) {
+            memset(tmp1[i], 0, sizeof(double)*P1col);
+        }
+        for (i=0; i<P2row; i++) {
+            memset(tmp2[i], 0, sizeof(double)*P2col);
+        }
+        for (i=0; i<Krow; i++) {
+            memset(tmp3[i], 0, sizeof(double)*P1col);
+        }
+        for (i=0; i<Srow; i++) {
+            memset(tmp4[i],0, sizeof(double)*P2col);
+        }
+
         
         alpha_p*=0.9;
     }
@@ -354,17 +434,12 @@ int main(int argc, const char * argv[])
     
     // write to file
     write_matrix_to_file(M, Mrow, Mcol);
-        
-        
-        
-        
-        
-        
-        
+    
+      printf("8\n");
         
         
     //traditional ways
-    }else{
+    /*}else{
         
         int i=0;
         FILE *fp;
@@ -383,13 +458,13 @@ int main(int argc, const char * argv[])
         //fclose(fp);fp=fopen(R_M, "r");
         read_matrix_from_file(R, Rrow, Rcol, fp);
         fclose(fp);
-        /*int m,n;
+        int m,n;
          for (m=0; m<Rrow; ++m) {
          for (n=0; n<Rcol; ++n) {
          printf("%lf\t",R[m][n]);
          }
          printf("\n");
-         }*/
+         }
         
         
         // K
@@ -566,14 +641,14 @@ int main(int argc, const char * argv[])
             matrix_multiply1(M, Q, tmp0, Mrow, Mcol, Qrow);
             
             // P1
-            matrix_times(1-alpha_p*lambda, P1, P1, P1row, P1col);
+            matrix_times(1+alpha_p*lambda, P1, P1, P1row, P1col);
             
             matrix_multiply2(K, M, tmp1, Kcol, Krow, Mcol);
             
             matrix_add(P1, tmp1, P1, P1row, P1col);
             
             // P2
-            matrix_times(1-alpha_p*lambda, P2, P2, P2row, P2col);
+            matrix_times(1+alpha_p*lambda, P2, P2, P2row, P2col);
             
             matrix_multiply2(S, M, tmp2, Scol, Srow, Mcol);
             
@@ -581,7 +656,7 @@ int main(int argc, const char * argv[])
             
             
             // Q
-            matrix_times(1-alpha_p*lambda, Q, Q, Qrow, Qcol);
+            matrix_times(1+alpha_p*lambda, Q, Q, Qrow, Qcol);
             
             matrix_multiply(K, P1, tmp3, Krow, Kcol, P1col);
             
@@ -595,7 +670,7 @@ int main(int argc, const char * argv[])
             
             
             // B
-            matrix_times(1-alpha_p*lambda, B, B, Brow, Bcol);
+            matrix_times(1+alpha_p*lambda, B, B, Brow, Bcol);
             matrix_add(M, B, B, Brow, Bcol);
             
             
@@ -623,6 +698,7 @@ int main(int argc, const char * argv[])
         // write to file
         write_matrix_to_file(M, Mrow, Mcol);
     
+    }*/
     }
     return 0;
 }
