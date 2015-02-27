@@ -25,6 +25,7 @@
 #define Keyword_MT "/Users/ybren/Desktop/dataCracker/dataCracker/pre/user_key_word_13_ji.txt"
 #define Social_MT "/Users/ybren/Desktop/dataCracker/dataCracker/pre/S_13_n_nu.txt"
 #define R_M "/Users/ybren/Desktop/dataCracker/dataCracker/pre/Rui_13_nm.txt"
+#define OUTPUT "model.csv"
 
 
 /*#define Keyword_M "K.csv"
@@ -435,8 +436,11 @@ int main(int argc, const char * argv[])
     // Generate Model & write to file: model.csv
     
     // write to file
-    write_matrix_to_file(M, Mrow, Mcol);
-    
+        
+        
+        fp=fopen(OUTPUT, "w");
+        write_matrix_to_file(M, Mrow, Mcol,fp);
+        fclose(fp);
       printf("8\n");
         
         

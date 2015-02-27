@@ -26,7 +26,7 @@ void matrix_times(double c, double** A, double** ans, int m,int n);
 // ans=A*B
 void matrix_multiply(double** A, double** B, double** ans,int m,int k,int n);
 
-void write_matrix_to_file(double **A,int m,int n);
+void write_matrix_to_file(double **A,int m,int n,FILE *fp);
 
 void read_matrix_from_file(double **A,int m,int n,FILE *fp);
 
@@ -109,9 +109,7 @@ void matrix_multiply(double** A, double** B, double** ans,int m,int k,int n){
 }
 // A[i][j],   A[i][j+1],   ...,
 // A[i+1][j], A[i+1][j+1], ...,
-void write_matrix_to_file(double **A,int m,int n){
-    FILE *fp;
-    fp=fopen("model.csv", "w");
+void write_matrix_to_file(double **A,int m,int n, FILE *fp){
     int i,j;
     for (i=0; i<m; ++i) {
         for (j=0; j<n; ++j) {
