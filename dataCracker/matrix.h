@@ -115,7 +115,7 @@ void matrix_multiply(double** A, double** B, double** ans,int m,int k,int n){
     int i1,i2;
     for (i1=0; i1<m; i1++) {
         for (i2=0; i2<n; i2++) {
-            int tmp=0;
+            double tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
                 tmp+=A[i1][j1]*B[j1][i2];
@@ -264,7 +264,7 @@ void matrix_multiply1(double** A, double** B, double** ans,int m,int k,int n){
     int i1,i2;
     for (i1=0; i1<m; i1++) {
         for (i2=0; i2<n; i2++) {
-            int tmp=0;
+            double tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
                 tmp+=A[i1][j1]*B[i2][j1];
@@ -279,7 +279,7 @@ void matrix_multiply2(double** A, double** B, double** ans,int m,int k,int n){
     int i1,i2;
     for (i1=0; i1<m; i1++) {
         for (i2=0; i2<n; i2++) {
-            int tmp=0;
+            double tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
                 tmp+=A[j1][i1]*B[j1][i2];
@@ -294,7 +294,7 @@ void matrix_multiply3(double** A, double** B, double** ans,int m,int k,int n){
     int i1,i2;
     for (i1=0; i1<m; i1++) {
         for (i2=0; i2<n; i2++) {
-            int tmp=0;
+            double tmp=0;
             int j1;
             for (j1=0; j1<k; j1++) {
                 tmp+=A[j1][i1]*B[i2][j1];
