@@ -213,7 +213,7 @@ int get_row(char *filename){
     fgets(buffer,sizeof(buffer),fp);
     pclose(fp);
     int row= atoi(buffer);
-    return row+1;
+    return row;
 }
 
 //read a single line from the file ended with a '\n'
