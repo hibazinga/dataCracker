@@ -26,13 +26,13 @@
 #define Social_MT "/Users/qiuhanding/Documents/249/project/dataCracker/NormalizedS/S_13_n_nu.txt"
 #define R_M "/Users/qiuhanding/Documents/249/project/dataCracker/Rui/Rui_13_nm.txt"
 #define R_MT "/Users/qiuhanding/Documents/249/project/dataCracker/Rui/Rui_13_mn.txt"*/
-#define OUTPUT "model1.csv"
+#define OUTPUT "model2.csv"
 
-#define Keyword_M "user_key_word_1_ij.txt"
-  #define Social_M "S_1_nu_n.txt"
-  #define Keyword_MT "user_key_word_1_ji.txt"
-  #define Social_MT "S_1_n_nu.txt"
-  #define R_M "Rui_1_nm.txt"
+#define Keyword_M "user_key_word_2_ij.txt"
+  #define Social_M "S_2_nu_n.txt"
+  #define Keyword_MT "user_key_word_2_ji.txt"
+  #define Social_MT "S_2_n_nu.txt"
+  #define R_M "Rui_2_nm.txt"
 #define SPARSE 1
 
 
@@ -342,16 +342,50 @@ int main(int argc, const char * argv[])
 	alpha_p*=0.9;
 
     }
-    printf("end of gd\n");
+    for (i=0; i<nu; i++) {
+      free(tmp0[i]);
+    }
     free(tmp0);
-    printf("delete tmp1\n");
+    for (i=0; i<k; i++) {
+      free(tmp1[i]);
+    }
     free(tmp1);
-    printf("delete tmp2\n");
+    for (i=0; i<n; i++) {
+      free(tmp2[i]);
+    }
     free(tmp2);
-    printf("delete tmp3\n");
+    for (i=0; i<nu; i++) {
+      free(tmp3[i]);
+    }
     free(tmp3);
-    printf("delete tmp5\n");
+    for (i=0; i<F; i++) {
+      free(tmp5[i]);
+    }
     free(tmp5);
+    free(K);
+    free(Kr);
+    free(Kc);
+    free(S);
+    free(Sr);
+    free(Sc);
+    free(KT);
+    free(KTr);
+    free(KTc);
+    free(ST);
+    free(STr);
+    free(STc);
+    free(R);
+    free(Rr);
+    free(Rc);
+    for (i=0; i<k; i++) {
+      free(P1[i]);
+    }
+    free(P1);
+    for (i=0; i<n; i++) {
+      free(P2[i]);
+    }
+    free(P2);
+
     // Generate Model & write to file: model.csv
     printf("finalize result\n");
     fp=fopen(OUTPUT, "w");
