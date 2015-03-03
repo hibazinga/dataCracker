@@ -69,14 +69,9 @@ void sparse_matrix_multiply1(int* row,int* col,double* A, double** B, double** a
 void sparse_matrix_multiply2(double** A, int* row, int* col,double* B, double** ans,int m,int k,int n,int length);
 // ans = A + bI + bU where A is sparse, bI is 1*col, bU is row*1
 void matrix_add1(double* A, double* bI, double* bU, double* ans,int* row,int* col, int Rline);
-// ans = R + bI + bU where R is not sparse, bI is 1*col, bU is row*1
-void matrix_add2(double** R, double* bI, double* bU, double** ans,int Rrow,int Rcol);
-// load sparse set into matrix
-void matrix_load(double* sparse, double** ans, int* row,int* col, int Rline);
-// load matrix into sparse set for RT
-void matrix_load2(double** R, double* sparse, int* row, int* col, int Rline);
 // add sparse matrix's sum of line to a vector
 void vector_add(double* b, double* M, int* row, int Rline);
+void finalize_result(double** A, double** B, int m,int k,int n, double*bI, double*bU,FILE *fp);
 
 // ans=A+B
 void matrix_add(double** A, double** B, double** ans,int m,int n){
@@ -168,7 +163,8 @@ void random_initialize(double **A,int m,int n){
     int i,j;
     for (i=0; i<m; i++) {
         for (j=0; j<n; j++) {
-            A[i][j]=rand()%2;
+	  A[i][j]=rand()%3-1;
+	  A[i][j]/=12;
         }
     }
 }
@@ -177,7 +173,9 @@ void random_initialize(double **A,int m,int n){
 void random_initialize_vector(double *A,int n){
     srand((unsigned)time(NULL));
     for (int i=0; i<n; i++) {
-      A[i]=rand()%2;
+      A[i]=rand()%3;
+      A[i]-=1;
+      A[i]/=n;
     }
 }
 
@@ -404,33 +402,25 @@ void matrix_add1(double* A, double* bI, double* bU, double* ans,int* row,int* co
     }
 }
 
-//load sparse matrix into whole matrix
-void matrix_load(double* sparse, double** ans, int* row,int* col, int Rline){
-    int i;
-    for (i=0; i<Rline; i++) {
-      ans[row[i]][col[i]] = sparse[i];
-    }
-}
-
-// load matrix into sparse set for RT
-void matrix_load2(double** R, double* sparse, int* row, int* col, int Rline){
-    int i;
-    for (i=0; i<Rline; i++) {
-      sparse[i] = R[col[i]][row[i]];
-    }
-}
-
 void vector_add(double* b, double* M, int* row, int Rline){
   for (int i = 0 ; i < Rline; i++) {
     b[row[i]] += M[i];
   }
 }
 
-void matrix_add2(double** R, double* bI, double* bU, double** ans,int Rrow,int Rcol){
-    int i,j;
-    for (i=0; i<Rrow; i++) {
-        for (j=0; j<Rcol; j++) {
-            ans[i][j]=R[i][j]+bI[j]+bU[i];
+void finalize_result(double** A, double** B, int m,int k,int n, double*bI, double*bU,FILE *fp){
+    int i1,i2;
+    for (i1=0; i1<m; i1++) {
+        for (i2=0; i2<n; i2++) {
+            double tmp=0;
+            int j1;
+            for (j1=0; j1<k; j1++) {
+                tmp+=A[i1][j1]*B[j1][i2];
+            }
+	    tmp+=bI[i2]+bU[i1];
+	    fprintf(fp, "%lf", tmp);
+	    fputc('\t',fp);
         }
+	fputc('\n',fp);
     }
 }
