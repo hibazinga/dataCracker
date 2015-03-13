@@ -1,5 +1,5 @@
-path_in = 'track1/rec_log_train.txt'
-path_out = 'preprocessing/rec_log_train_pre_1.txt'
+path_in = '../track1/rec_log_train.txt'
+path_out = '../predata/rec_log_train_pre_1.txt'
 f_in = open(path_in, "r")
 
 dict = {}

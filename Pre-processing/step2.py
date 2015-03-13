@@ -1,6 +1,6 @@
-path_in1 = 'preprocessing/rec_log_train_pre_1.txt'
-path_in2 = 'track1/user_sns.txt'
-path_out = 'preprocessing/rec_log_train_pre_2.txt'
+path_in1 = '../predata/rec_log_train_pre_1.txt'
+path_in2 = '../track1/user_sns.txt'
+path_out = '../predata/rec_log_train_pre_2.txt'
 f_in1 = open(path_in1, "r")
 f_in2 = open(path_in2, "r")
 userID = set([])

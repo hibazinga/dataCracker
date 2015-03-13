@@ -1,7 +1,7 @@
 import time
 
-in_file = 'preprocessing/rec_log_train_pre_2.txt'
-out_file = 'preprocessing/rec_log_train_pre_3.txt'
+in_file = '../predata/rec_log_train_pre_2.txt'
+out_file = '../predata/rec_log_train_pre_3.txt'
 records = set()
 threshold = 45
 separator = "\t"
@@ -124,7 +124,7 @@ def filter_records(pos, threshold):
 
 		if (condition1 and condition2):
 			res = separator.join(record)
-			res += "\r"
+			res += "\n"
 			fw.write(res)
 
 	fr.close()

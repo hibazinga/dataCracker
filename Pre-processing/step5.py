@@ -1,12 +1,11 @@
 import re
 import math
 
-IN_FILE1 = 'track1/user_key_word.txt'
-IN_FILE2 = 'track1/user_profile.txt'
-IN_FILE3 = 'preprocessing/rec_log_train_pre_3.txt'
+IN_FILE1 = '../track1/user_key_word.txt'
+IN_FILE2 = '../track1/user_profile.txt'
+IN_FILE3 = '../predata/rec_log_train_pre_3.txt'
 TOP_KEYWORD_NUM = 5
-CURRENT_YEAR = 2012
-CATEGORY_NUM = 13
+CATEGORY_NUM = 11
 
 valid_user_set = set([])	# a set to store all valid user id
 keyword_list = list()	#a list to store sorted keywords (after dimension reduction)
@@ -25,32 +24,7 @@ def filterValidUsers():
 		if i % 4 == 0:
 			valid_user_set.add(data[i])
 
-	# users = [line.split()[0] for line in data]
-	# valid_user_set = set(users)
 	print "valid user number: " + str(len(valid_user_set))
-
-# get user_profile
-# def readUserProfile():
-# 	print "Reading user profiles into memory..."
-# 	global user_profile
-# 	f = open(IN_FILE2, "r")
-# 	data = f.read().split('\n')
-# 	data = filter(len, data)
-# 	f.close()
-
-# 	for line in data:
-# 		entries = line.split('\t')
-# 		uid = entries[0]
-# 		if uid not in valid_user_set:
-# 			continue
-# 		if entries[1].find('-') != -1:
-# 			age = -1
-# 		else:
-# 			age = CURRENT_YEAR - int(entries[1])
-# 		gender =  int(entries[2])
-# 		user_profile[uid] = (age, gender)
-
-# 	print user_profile
 
 # get user_record
 def readRawFile():
@@ -93,66 +67,15 @@ def readRawFile():
 
 	print "total keyword number: " + str(len(keyword_list))
 
-# select from category 1 ~ category 13 for uid
-def selectCategory(uid):
-	age, gender = user_profile[uid]
-	if age == -1 or gender == 0:
-		return 13
-
-	index = 0
-	if age <= 12:
-		index = 1
-	elif age <= 25:
-		index = 3
-	elif age <= 35:
-		index = 5
-	elif age <= 45:
-		index = 7
-	elif age <= 60:
-		index = 9
-	else:
-		index = 11
-
-	if gender == 2:
-		index += 1
-
-	return index
-
-# def writeMatrixToFiles():
-# 	print "constructing user-keyword matrixes..."
-# 	files = [None]*13
-# 	for i in range(0, 13):
-# 		f = open("preprocessing/user_key_word_%s.csv" % (i+1), "a")
-# 		files[i] = f
-
-# 	count = 0
-# 	for uid in user_record:
-# 		if count % 10000 == 0:
-# 			print "record" + str(count) + "..."
-# 		count+=1
-# 		row = ""
-
-# 		for kw in keyword_list:
-# 			if kw in user_record[uid]:
-# 				row += str(user_record[uid][kw]) + ","
-# 			else:
-# 				row += "0,"
-# 		row = row[0: len(row)-1]
-# 		row += "\n"
-# 		files[selectCategory(uid)-1].write(row);
-
-# 	for i in range(0, 13):
-# 		files[i].close()
-
 def writeToFiles():
 	keyword_index_dict = dict()
 	for i in range(0, len(keyword_list)):
 		keyword_index_dict[keyword_list[i]] = i
 
 	for i in range(0, CATEGORY_NUM):
-		f_in = open("preprocessing/user_key_word_%s.txt" % (i+1), "r")
-		f_out_1 = open("preprocessing/user_key_word_%s_ij.txt" % (i+1), "a")
-		f_out_2 = open("preprocessing/user_key_word_%s_ji.txt" % (i+1), "a")
+		f_in = open("../predata/user_key_word_%s.txt" % (i+1), "r")
+		f_out_1 = open("../predata/user_key_word_%s_ij.txt" % (i+1), "w")
+		f_out_2 = open("../predata/user_key_word_%s_ji.txt" % (i+1), "w")
 
 		data = f_in.read().split('\n')
 		data = filter(len, data)
@@ -198,7 +121,6 @@ def writeToFiles():
 
 if __name__ == "__main__":
 	filterValidUsers()
-	# readUserProfile()
 	readRawFile()
 	writeToFiles()
 
