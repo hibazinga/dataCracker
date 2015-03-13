@@ -2,13 +2,13 @@
 
 CC=gcc
 
-CFLAGS=-c -Wall
-DEPS=matrix.h
+CFLAGS=-std=c99 -Wall -O2
+DEPS=matrix.h main.c
 
 
-all: 
-	$(CC) main.c $(DEPS)
+main: $(DEPS)
+	$(CC) $(CFLAGS) $^
 
 clean:
-	rm *.gch a.out
+	rm *.gch main
 

@@ -14,25 +14,20 @@
 //#define KNORM 1   // matrix norm of K calculated by matlab
 //#define SNORM 1   //            --  S --
 #define F 128       // # of latent factors 64 or 128
-#define N 100        // # of iterations
-#define alpha -0.00001 // learning rate, alpha = -alpha
-#define lambda 0.001 // normalization factor
+#define N 100       // # of iterations
+#define alpha -0.00008 // learning rate, alpha = -alpha
+#define lambda 0.004 // normalization factor
+#define lambdabias 0.002
 
 /* --- CHANGE IT WITH YOUR FILE PATH! ---*/
 
-/*#define Keyword_M "/Users/qiuhanding/Documents/249/project/dataCracker/NormalizedK/user_key_word_13_ij.txt"
-#define Social_M "/Users/qiuhanding/Documents/249/project/dataCracker/NormalizedS/S_13_nu_n.txt"
-#define Keyword_MT "/Users/qiuhanding/Documents/249/project/dataCracker/NormalizedK/user_key_word_13_ji.txt"
-#define Social_MT "/Users/qiuhanding/Documents/249/project/dataCracker/NormalizedS/S_13_n_nu.txt"
-#define R_M "/Users/qiuhanding/Documents/249/project/dataCracker/Rui/Rui_13_nm.txt"
-#define R_MT "/Users/qiuhanding/Documents/249/project/dataCracker/Rui/Rui_13_mn.txt"*/
-#define OUTPUT "model2.csv"
+#define OUTPUT "model9.csv"
 
-#define Keyword_M "user_key_word_2_ij.txt"
-  #define Social_M "S_2_nu_n.txt"
-  #define Keyword_MT "user_key_word_2_ji.txt"
-  #define Social_MT "S_2_n_nu.txt"
-  #define R_M "Rui_2_nm.txt"
+#define Keyword_M "user_key_word_9_ij.txt"
+  #define Social_M "S_9_nu_n.txt"
+  #define Keyword_MT "user_key_word_9_ji.txt"
+  #define Social_MT "S_9_n_nu.txt"
+  #define R_M "Rui_9_nm.txt"
 #define SPARSE 1
 
 
@@ -84,7 +79,7 @@ int main(int argc, const char * argv[])
     double* R=(double *)malloc(Rline*sizeof(double));
     read_sparse_matrix(Rr, Rc, R, fp);
     fclose(fp);
-    
+
     // K - initialize, sparse
         
     int Kline=get_row(Keyword_M)-1;
@@ -92,7 +87,7 @@ int main(int argc, const char * argv[])
         
     read_row_and_column(fp, RC);
     const int Krow=RC[0];
-    const int Kcol=RC[1];
+//const int Kcol=RC[1];
     const int k=RC[1];
         
     int* Kr=(int *)malloc(Kline*sizeof(int));
@@ -118,9 +113,8 @@ int main(int argc, const char * argv[])
         
     read_row_and_column(fp, RC);
     const int Srow=RC[0];
-    const int Scol=RC[1];
+//const int Scol=RC[1];
     const int n=RC[1];
-        
         
     int* Sr=(int *)malloc(Sline*sizeof(int));
     int* Sc=(int *)malloc(Sline*sizeof(int));
@@ -164,7 +158,7 @@ int main(int argc, const char * argv[])
       P2[i]=(double *)malloc(sizeof(double)*F);
     }
     random_initialize(P2, n, F);
-    
+
     // Q - random_init, matrix
     
     int Qrow=F;
@@ -183,9 +177,8 @@ int main(int argc, const char * argv[])
       M1[i]=(double *)malloc(sizeof(double)*F);
       memset(M1[i], 0, sizeof(double)*F);
     }
-
     sparse_matrix_multiply(Kr, Kc, K, P1, M1, nu, k, F, Kline);
-        
+
     //2. M1 += S * P2
     sparse_matrix_multiply(Sr, Sc, S, P2, M1, nu, n, F,Sline);
         
@@ -232,7 +225,6 @@ int main(int argc, const char * argv[])
     }
         
     //5. tmp5 = tmp3T * M   --- F * Mcol  ->gradient of Q
-    
     double **tmp5 = (double **)malloc(sizeof(double)*F);
     for (i=0; i<F; i++) {
       tmp5[i]=(double *)malloc(sizeof(double)*m);
@@ -256,22 +248,23 @@ int main(int argc, const char * argv[])
       sparse_matrix_substract(R, M, Rline);
       // calculating cost:
       double c = 0;
-      for (int i = 0; i < Rline; i++)
+      for (i = 0; i < Rline; i++)
 	c += M[i]*M[i];
       printf("error in step %d is %f\n", step, c);
-      for (int i = 0; i < P1row; i++)
-	for (int j = 0; j < P1col; j++)
+      int j;
+      for (i = 0; i < P1row; i++)
+	for (j = 0; j < P1col; j++)
 	  c+= lambda*(P1[i][j]*P1[i][j]);
-      for (int i = 0; i < P2row; i++)
-	for (int j = 0; j < P2col; j++)
+      for (i = 0; i < P2row; i++)
+	for (j = 0; j < P2col; j++)
 	  c+= lambda*(P2[i][j]*P2[i][j]);
-      for (int i = 0; i < Qrow; i++)
-	for (int j = 0; j < Qcol; j++)
+      for (i = 0; i < Qrow; i++)
+	for (j = 0; j < Qcol; j++)
 	  c+= lambda*(Q[i][j]*Q[i][j]);
-      for (int i = 0; i < Rrow; i++)
-      c+= lambda*bU[i]*bU[i];
-      for (int i = 0; i < Rcol; i++)
-      c+= lambda*bI[i]*bI[i];
+      for (i = 0; i < Rrow; i++)
+      c+= lambdabias*bU[i]*bU[i];
+      for (i = 0; i < Rcol; i++)
+      c+= lambdabias*bI[i]*bI[i];
       printf("cost in step %d is %f\n", step, c);
       //0. M = alpha*M
       sparse_matrix_times(alpha_p, M, Rline);
@@ -294,9 +287,9 @@ int main(int argc, const char * argv[])
       //9. Q = (1+alpha*lambda)*Q
       matrix_times(1+alpha_p*lambda, Q, Q, Qrow, Qcol);
       //10. bI = (1+alpha*lambda)*bI
-      sparse_matrix_times(1+alpha_p*lambda, bI, m);
+      sparse_matrix_times(1+alpha_p*lambdabias, bI, m);
       //11. bU = (1+alpha*lambda)*bU
-      sparse_matrix_times(1+alpha_p*lambda, bU, nu);
+      sparse_matrix_times(1+alpha_p*lambdabias, bU, nu);
       //12. P1 = P1+tmp1
       matrix_add(P1, tmp1, P1, P1row, P1col);
       //13. P2 = P2+tmp2
@@ -339,56 +332,14 @@ int main(int argc, const char * argv[])
       }
 
       if (step%10 == 9)
-	alpha_p*=0.9;
+	alpha_p*=0.95;
 
     }
-    for (i=0; i<nu; i++) {
-      free(tmp0[i]);
-    }
-    free(tmp0);
-    for (i=0; i<k; i++) {
-      free(tmp1[i]);
-    }
-    free(tmp1);
-    for (i=0; i<n; i++) {
-      free(tmp2[i]);
-    }
-    free(tmp2);
-    for (i=0; i<nu; i++) {
-      free(tmp3[i]);
-    }
-    free(tmp3);
-    for (i=0; i<F; i++) {
-      free(tmp5[i]);
-    }
-    free(tmp5);
-    free(K);
-    free(Kr);
-    free(Kc);
-    free(S);
-    free(Sr);
-    free(Sc);
-    free(KT);
-    free(KTr);
-    free(KTc);
-    free(ST);
-    free(STr);
-    free(STc);
-    free(R);
-    free(Rr);
-    free(Rc);
-    for (i=0; i<k; i++) {
-      free(P1[i]);
-    }
-    free(P1);
-    for (i=0; i<n; i++) {
-      free(P2[i]);
-    }
-    free(P2);
+    printf("end of gd\n");
 
     // Generate Model & write to file: model.csv
     printf("finalize result\n");
-    fp=fopen(OUTPUT, "w");
+    fp=fopen(OUTPUT, "w+");
     finalize_result(M1, Q, M1row, M1col, Qcol, bI, bU,fp);
     fclose(fp);
     printf("8\n");

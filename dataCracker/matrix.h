@@ -172,10 +172,12 @@ void random_initialize(double **A,int m,int n){
 //initialize vector with random 0/1
 void random_initialize_vector(double *A,int n){
     srand((unsigned)time(NULL));
-    for (int i=0; i<n; i++) {
-      A[i]=rand()%3;
-      A[i]-=1;
-      A[i]/=n;
+    int i;
+    for (i=0; i<n; i++) {
+      A[i] = 0;
+      //A[i]=rand()%3;
+      //A[i]-=1;
+      //A[i]/=n;
     }
 }
 
@@ -342,24 +344,27 @@ void sparse_matrix_times(double c, double* A, int n){
 
 // ans=A*B A is sparse
 void sparse_matrix_multiply(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length){
-  for(int i = 0; i < length; i ++) {
-    for(int j = 0; j < n; j++)
+  int i,j;
+  for(i = 0; i < length; i ++) {
+    for(j = 0; j < n; j++)
       ans[row[i]][j] += A[i] * B[col[i]][j];
   }
 }
 
 // A*BT A is sparse
 void sparse_matrix_multiply1(int* row,int* col,double* A, double** B, double** ans,int m,int k,int n,int length){
-    for(int i = 0; i < length; i ++) {
-        for(int j = 0; j < n; j++)
+  int i,j;
+  for(i = 0; i < length; i ++) {
+        for(j = 0; j < n; j++)
             ans[row[i]][j] += A[i] * B[j][col[i]];
     }
 }
 
 // AT*B B is sparse
 void sparse_matrix_multiply2(double** A, int* row, int* col,double* B, double** ans,int m,int k,int n,int length){
-    for(int i = 0; i < length; i ++) {
-        for(int j = 0; j < m; j++)
+  int i,j;
+    for(i = 0; i < length; i ++) {
+        for(j = 0; j < m; j++)
             ans[j][col[i]] += A[row[i]][j] * B[i];
     }
 }
@@ -388,8 +393,9 @@ void read_row_and_column(FILE *fp,int *A){
 
 // M*K  *  K*N  =   M*N
 void matrix_multiply_result_in_sparse(double** A, double** B, double* ans,int k, int* row, int* col, int Rline){
-  for (int i = 0; i < Rline; i++) {
-    for (int j = 0; j < k; j++) {
+  int i,j;
+  for (i = 0; i < Rline; i++) {
+    for (j = 0; j < k; j++) {
       ans[i] = A[row[i]][j]*B[j][col[i]];
     }
   }
@@ -403,7 +409,8 @@ void matrix_add1(double* A, double* bI, double* bU, double* ans,int* row,int* co
 }
 
 void vector_add(double* b, double* M, int* row, int Rline){
-  for (int i = 0 ; i < Rline; i++) {
+  int i;
+  for (i = 0 ; i < Rline; i++) {
     b[row[i]] += M[i];
   }
 }
