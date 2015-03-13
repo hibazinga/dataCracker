@@ -2,7 +2,7 @@ import sys
 test_file = "../track1/rec_log_test.txt"
 user_profile = "../track1/user_profile.txt"
 user_profile_group= "../predata/user_profile_%s.txt" % (str(sys.argv[1]))
-R_matrix = "../training/model%s_1.csv" % (str(sys.argv[1]))# TODO: change the matrix name according to the real name
+R_matrix = "../training/model%s.csv" % (str(sys.argv[1]))# TODO: change the matrix name according to the real name
 item_ID = "../track1/item.txt"
 user_item_recommendation = "user_item_recommendation_%s.txt" % (str(sys.argv[1]))
 

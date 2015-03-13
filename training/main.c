@@ -15,21 +15,9 @@
 //#define SNORM 1   //            --  S --
 #define F 128       // # of latent factors 64 or 128
 #define N 100       // # of iterations
-#define alpha -0.00008 // learning rate, alpha = -alpha
+#define alpha -0.00005 // learning rate, alpha = -alpha
 #define lambda 0.004 // normalization factor
 #define lambdabias 0.002
-
-/* --- CHANGE IT WITH YOUR FILE PATH! ---*/
-
-#define OUTPUT "model9.csv"
-
-#define Keyword_M "user_key_word_9_ij.txt"
-  #define Social_M "S_9_nu_n.txt"
-  #define Keyword_MT "user_key_word_9_ji.txt"
-  #define Social_MT "S_9_n_nu.txt"
-  #define R_M "Rui_9_nm.txt"
-#define SPARSE 1
-
 
 /***********************
  
@@ -57,22 +45,33 @@
 
 int main(int argc, const char * argv[])
 {
+  char OUTPUT[20];
+  sprintf(OUTPUT, "model%s.csv", argv[1]);
+  char Keyword_M[50];
+  sprintf(Keyword_M, "../predata/user_key_word_%s_ij.txt", argv[1]);
+  char Keyword_MT[50];
+  sprintf(Keyword_MT, "../predata/user_key_word_%s_ji.txt", argv[1]);
+  char Social_M[50];
+  sprintf(Social_M, "../predata/S_%s_nu_n.txt", argv[1]);
+  char Social_MT[50];
+  sprintf(Social_MT, "../predata/S_%s_n_nu.txt", argv[1]);
+  char R_M[50];
+  sprintf(R_M, "../predata/Rui_%s_nm.txt", argv[1]);
   //LFM Model
-  if (SPARSE){ //use sparse matrix
-        
-    int i=0;
+
+  int i=0;
     FILE *fp;
     int *RC = (int *)malloc(2*sizeof(int));
     
     // R - initialize, sparse
-        
+
     fp=fopen(R_M, "r");
     read_row_and_column(fp, RC);
     const int Rrow=RC[0];
     const int Rcol=RC[1];
     const int nu=RC[0];
     const int m=RC[1];
-  
+
     int Rline=get_row(R_M)-1;
     int* Rr=(int *)malloc(Rline*sizeof(int));
     int* Rc=(int *)malloc(Rline*sizeof(int));
@@ -342,8 +341,6 @@ int main(int argc, const char * argv[])
     fp=fopen(OUTPUT, "w+");
     finalize_result(M1, Q, M1row, M1col, Qcol, bI, bU,fp);
     fclose(fp);
-    printf("8\n");
         
-  }
   return 0;
 }
