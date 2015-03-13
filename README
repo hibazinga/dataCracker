@@ -1,0 +1,81 @@
+README
+
+# Please read it first.
+
+Team: Data Crackers
+
+Team Members:
+Name:            Student-ID:          Email:
+Yanbin Ren       004435008          yanbinren@cs.ucla.edu
+Haitao Zhang     204436120          haitao@cs.ucla.edu
+Qiuhan Ding      604414300          qiuhanding@cs.ucla.edu
+Wenting Li       004434117          kathy0225@ucla.edu
+Jie Yu           404308904          jyu0102@cs.ucla.edu
+Yuntao Zhao      804246235          ytzhao@ucla.edu
+Meng Li          004512841          mrayli@cs.ucla.edu
+
+
+# What's included: (in folder “dataCracker”)
+0. Readme - this file
+1. source code (in C): ./training/
+2. pre-processing scripts in python: ./preprocessing/
+3. predict: ./predict/
+4. data: ./data/
+5. slides: ./slides/, please open "data crackers Slides.html"
+6. final report: final report.pdf
+
+# Recommended test environment:
+RAM: 16G or more
+Disk Space: 40GB or more
+gcc version: 4.2.1
+python version: 2.x
+
+# How to run the code:
+0. IMPORTANT NOTIFICATIONS: 
+   1) Before you try to run the code, please make sure that all the files needed in the program are set right (especially the file paths).
+   2) If you encounter some problems when try to run the code, please contact any member of our group for help.
+
+1. Pre-processing:
+• python step1.py #filter out dummy user• python step2.py #filter out dummy user• python step3.py #time-based session slicing• python step4.py #user group division• python step5.py #generate keyword matrix• python step6.py #generate user social network matrix• python step7.py #generate training matrix Rui
+
+2. Training Model:
+   In our project, we divided the users into 11 groups according to their genders & ages. So we build different models for each group separately.
+
+   1) $ make
+
+   2) $ ./a.out [group-id]
+
+   3) Wait for about 10-15 minutes (time may vary according to the amount of training data). If you see a "segmentation fault" or "out of memory" in your terminal, clear the cache and run it again. After that, you will see a modelx.csv in the corresponding folder.
+      $ sudo purge; ./a.out
+
+3. Prediction & Evaluation:
+   1) If you only want to get the predict result for all the users (both inactive and active users included), just do the following steps
+      python generate_inactive_relation_active.py
+      python predict.py
+      python MAP.py
+
+   2) If you want to get the predict result for the active users belong to a certain group, do the following steps
+      python generate_inactive_relation_active.py (if you run this command in 1, there is no need to run it again)
+      python one-group-predict.py group_number (here group_number should be one of 1~11)
+      python one-group-MAP.py group_number (here group_number should be one of 1~11)
+
+   3) If you want to get the predict result for "Public" solution (please see "KDD_Track1_solution.csv" to see which clicks are "Public")
+      python generate_inactive_relation_active.py (if you run this command in 1, there is no need to run it again)
+      python predict-public.py
+      python MAP-public.py
+
+   4) If you want to get the predict result for "Private" solution (please see "KDD_Track1_solution.csv" to see which clicks are "Priavte")
+      python generate_inactive_relation_active.py (if you run this command in 1, there is no need to run it again)
+      python predict-private.py
+      python MAP-private.py
+
+
+# Get source code on Github:
+https://github.com/hibazinga/dataCracker - master branch
+
+
+Thanks and enjoy.
+
+Powered by Data Crackers. Copyright © 2015 Data Crackers, UCLA. All rights reserved.
+
+**END**
