@@ -16,6 +16,7 @@
 //#define SNORM 1   //            --  S --
 #define F 128       // # of latent factors 64 or 128
 #define N 100       // # of iterations
+
 /*******
 #define alpha -0.00008 // learning rate, alpha = -alpha
 #define lambda 0.004 // normalization factor
@@ -36,6 +37,8 @@
 double lambda_group[11]={0.003,0.003,0.003,0.003,0.004,0.004,0.003,0.002,0.003,0.003,0.003};
 double lambdabias_group[11]={0.002,0.001,0.001,0.002,0.001,0.001,0.002,0.002,0.002,0.002,0.002};
 double alpha_group[11]={0.00004,0.00003,0.00003,0.00004,0.00002,0.00001,0.00003,0.00003,0.00005,0.00005,0.0001};
+
+
 /***********************
  
  Matrix:
@@ -82,21 +85,20 @@ int main(int argc, const char * argv[])
     double lambdabias=lambdabias_group[group_id];
     
   //LFM Model
-  if (SPARSE){ //use sparse matrix
-        
-    int i=0;
+
+  int i=0;
     FILE *fp;
     int *RC = (int *)malloc(2*sizeof(int));
     
     // R - initialize, sparse
-        
+
     fp=fopen(R_M, "r");
     read_row_and_column(fp, RC);
     const int Rrow=RC[0];
     const int Rcol=RC[1];
     const int nu=RC[0];
     const int m=RC[1];
-  
+
     int Rline=get_row(R_M)-1;
     int* Rr=(int *)malloc(Rline*sizeof(int));
     int* Rc=(int *)malloc(Rline*sizeof(int));
@@ -366,8 +368,6 @@ int main(int argc, const char * argv[])
     fp=fopen(OUTPUT, "w+");
     finalize_result(M1, Q, M1row, M1col, Qcol, bI, bU,fp);
     fclose(fp);
-    printf("8\n");
         
-  }
   return 0;
 }
