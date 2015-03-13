@@ -10,27 +10,32 @@
 #include "matrix.h"
 #include <assert.h>
 #include <time.h>
+#include <string.h>
 
 //#define KNORM 1   // matrix norm of K calculated by matlab
 //#define SNORM 1   //            --  S --
 #define F 128       // # of latent factors 64 or 128
 #define N 100       // # of iterations
+/*******
 #define alpha -0.00008 // learning rate, alpha = -alpha
 #define lambda 0.004 // normalization factor
 #define lambdabias 0.002
-
+*******/
 /* --- CHANGE IT WITH YOUR FILE PATH! ---*/
-
+/*
 #define OUTPUT "model9.csv"
-
 #define Keyword_M "user_key_word_9_ij.txt"
-  #define Social_M "S_9_nu_n.txt"
-  #define Keyword_MT "user_key_word_9_ji.txt"
-  #define Social_MT "S_9_n_nu.txt"
-  #define R_M "Rui_9_nm.txt"
+#define Social_M "S_9_nu_n.txt"
+#define Keyword_MT "user_key_word_9_ji.txt"
+#define Social_MT "S_9_n_nu.txt"
+#define R_M "Rui_9_nm.txt"
+ 
+ */
 #define SPARSE 1
 
-
+double lambda_group[11]={0.003,0.003,0.003,0.003,0.004,0.004,0.003,0.002,0.003,0.003,0.003};
+double lambdabias_group[11]={0.002,0.001,0.001,0.002,0.001,0.001,0.002,0.002,0.002,0.002,0.002};
+double alpha_group[11]={0.00004,0.00003,0.00003,0.00004,0.00002,0.00001,0.00003,0.00003,0.00005,0.00005,0.0001};
 /***********************
  
  Matrix:
@@ -57,6 +62,25 @@
 
 int main(int argc, const char * argv[])
 {
+    int group_id=atoi(argv[1]);
+    
+    char OUTPUT[20];
+    sprintf(OUTPUT, "model%s.csv", argv[1]);
+    char Keyword_M[50];
+    sprintf(Keyword_M, "../predata/user_key_word_%s_ij.txt", argv[1]);
+    char Keyword_MT[50];
+    sprintf(Keyword_MT, "../predata/user_key_word_%s_ji.txt", argv[1]);
+    char Social_M[50];
+    sprintf(Social_M, "../predata/S_%s_nu_n.txt", argv[1]);
+    char Social_MT[50];
+    sprintf(Social_MT, "../predata/S_%s_n_nu.txt", argv[1]);
+    char R_M[50];
+    sprintf(R_M, "../predata/Rui_%s_nm.txt", argv[1]);
+    
+    double alpha=alpha_group[group_id];
+    double lambda=lambda_group[group_id];
+    double lambdabias=lambdabias_group[group_id];
+    
   //LFM Model
   if (SPARSE){ //use sparse matrix
         
