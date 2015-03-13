@@ -10,5 +10,5 @@ main: $(DEPS)
 	$(CC) $(CFLAGS) $^
 
 clean:
-	rm *.gch main
+	rm *.gch a.out
 
